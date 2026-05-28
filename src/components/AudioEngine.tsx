@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { createPortal } from 'react-dom';
+import { motion } from 'motion/react';
 import {
   VolumeX,
   Volume2,
@@ -11,7 +12,6 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import dikshuPortraitClean from '../assets/images/dikshu_portrait_clean_1779319295919.png';
 import listeningSongBg from '../assets/images/Listening-song.png';
 
 const tracks = [
@@ -35,6 +35,8 @@ export default function AudioEngine() {
   const [showPlaylist, setShowPlaylist] = useState(false);
   const [status, setStatus] = useState('Click play to start');
   const [shouldPlay, setShouldPlay] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -43,6 +45,21 @@ export default function AudioEngine() {
 
     return () => {
       window.removeEventListener('close-music-player', closePlaylist);
+    };
+  }, []);
+
+  useEffect(() => {
+    setIsMounted(true);
+
+    const updateIsMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+
+    updateIsMobile();
+    window.addEventListener('resize', updateIsMobile);
+
+    return () => {
+      window.removeEventListener('resize', updateIsMobile);
     };
   }, []);
 
@@ -112,6 +129,245 @@ export default function AudioEngine() {
     setShowPlaylist((value) => !value);
   };
 
+  const renderTracksList = (isMobileView: boolean) => {
+    return (
+      <div
+        className={`custom-scrollbar relative z-10 space-y-2 overflow-y-auto pr-1 ${isMobileView ? 'max-h-[48vh]' : 'max-h-[260px]'
+          }`}
+      >
+        {tracks.map((track, idx) => {
+          const isActive = currentTrackIndex === idx;
+
+          return (
+            <div
+              key={track.src}
+              className={`group/item flex min-w-0 items-center justify-between gap-2 rounded-xl border p-2.5 transition-all duration-300 sm:p-3 ${isActive
+                ? 'border-pink-400/40 bg-pink-500/20 text-white shadow-[0_0_12px_rgba(236,72,153,0.18)]'
+                : 'border-white/5 bg-black/25 text-pink-200/60 hover:border-pink-500/20 hover:bg-pink-500/10 hover:text-pink-100'
+                }`}
+            >
+              <button
+                type="button"
+                onClick={() => handleTrackSelect(idx)}
+                className="flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 py-0.5 text-left outline-none sm:gap-3"
+              >
+                <span
+                  className={`shrink-0 font-mono text-[10px] ${isActive ? 'font-bold text-pink-400' : 'opacity-40'
+                    }`}
+                >
+                  0{idx + 1}
+                </span>
+
+                <span
+                  className={`block min-w-0 flex-1 truncate text-xs font-semibold tracking-wide ${isActive ? 'font-bold text-pink-100' : ''
+                    }`}
+                >
+                  {track.title}
+                </span>
+
+                {isActive && isPlaying && (
+                  <span className="flex h-3 w-4 shrink-0 items-end gap-0.5 px-1">
+                    <span className="h-2 w-0.5 animate-bounce rounded-full bg-pink-400" />
+                    <span
+                      className="h-3 w-0.5 animate-bounce rounded-full bg-pink-400"
+                      style={{ animationDelay: '0.15s' }}
+                    />
+                    <span
+                      className="h-1.5 w-0.5 animate-bounce rounded-full bg-pink-400"
+                      style={{ animationDelay: '0.3s' }}
+                    />
+                  </span>
+                )}
+              </button>
+
+              <a
+                href={track.src}
+                download={`${track.title}.mp3`}
+                className="ml-1 grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-xl border border-pink-500/15 bg-pink-500/10 text-pink-300 transition-all hover:scale-105 hover:border-pink-500/40 hover:bg-pink-500/35 hover:text-white sm:ml-2"
+                title={`Download ${track.title}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Download className="h-3.5 w-3.5" />
+              </a>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const renderPlaylistCard = (isMobileView: boolean) => {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 18, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 18, scale: 0.96 }}
+        transition={{ duration: 0.22, ease: 'easeOut' }}
+        className={`
+          pointer-events-auto
+          relative
+          z-[9999]
+          max-h-[82vh]
+          overflow-hidden
+          rounded-[28px]
+          border
+          border-pink-500/30
+          bg-[#0e0314]/95
+          p-4
+          shadow-2xl
+          shadow-pink-500/25
+          backdrop-blur-3xl
+          ${isMobileView ? 'w-full max-w-[365px] flex flex-col' : 'w-[350px] p-5'}
+        `}
+      >
+        {isMobileView && (
+          <button
+            type="button"
+            onClick={() => setShowPlaylist(false)}
+            className="absolute right-3 top-3 z-20 grid h-8 w-8 place-items-center rounded-full border border-pink-300/20 bg-black/40 text-pink-100/80 backdrop-blur-md transition hover:bg-pink-500/20"
+            title="Close playlist"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+
+        <div
+          className="pointer-events-none absolute inset-0 z-0 scale-[1.02] bg-cover bg-center opacity-[0.65]"
+          style={{
+            backgroundImage: `url(${listeningSongBg})`,
+            filter: 'blur(1px) brightness(0.7)',
+          }}
+        />
+        <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-[#14021b]/60 via-[#0b0110]/50 to-[#1c0428]/70" />
+        <div className="pointer-events-none absolute -right-10 -top-10 z-0 h-32 w-32 animate-pulse rounded-full bg-pink-500/10 blur-2xl" />
+
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+          <motion.div
+            animate={{
+              y: [30, -50],
+              x: [40, 55],
+              opacity: [0, 0.45, 0],
+              scale: [0.8, 1.25, 0.8],
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 5.5,
+              ease: 'easeInOut',
+            }}
+            className="absolute text-xs font-mono text-pink-400/35"
+            style={{ bottom: '12%', left: '15%' }}
+          >
+            {'\u266a'}
+          </motion.div>
+
+          <motion.div
+            animate={{
+              y: [15, -60],
+              x: [240, 215],
+              opacity: [0, 0.5, 0],
+              scale: [1, 1.3, 1],
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 6.5,
+              delay: 2.2,
+              ease: 'easeInOut',
+            }}
+            className="absolute text-sm font-mono text-fuchsia-300/30"
+            style={{ bottom: '18%', left: '55%' }}
+          >
+            {'\u266b'}
+          </motion.div>
+
+          <motion.div
+            animate={{
+              scale: [1, 1.25, 1],
+              opacity: [0.15, 0.35, 0.15],
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 3.2,
+              ease: 'easeInOut',
+            }}
+            className="absolute text-pink-500"
+            style={{ top: '12%', right: '12%' }}
+          >
+            <Heart className="h-4 w-4 fill-pink-500/20" />
+          </motion.div>
+        </div>
+
+        <div
+          className={`relative z-10 mb-4 flex items-center justify-between border-b border-pink-500/20 pb-3 ${isMobileView ? 'pr-10' : ''
+            }`}
+        >
+          <div className="flex min-w-0 items-center gap-2">
+            <ListMusic className="h-4 w-4 shrink-0 animate-pulse text-pink-400" />
+            <span className="truncate text-[11px] font-extrabold uppercase tracking-widest text-[#ffd7ed] drop-shadow-[0_0_8px_rgba(236,72,153,0.55)] sm:text-xs">
+              Sweet Melody Playlist
+            </span>
+          </div>
+          <Sparkles
+            className="hidden h-4 w-4 animate-spin text-pink-300/80 sm:block"
+            style={{ animationDuration: '7s' }}
+          />
+        </div>
+
+        {renderTracksList(isMobileView)}
+
+        <div className="relative z-10 mt-4 flex flex-col gap-2.5 border-t border-pink-500/20 pt-4">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[10px] font-bold uppercase leading-none tracking-widest text-pink-300/45">
+              Player Status
+            </span>
+
+            <motion.div
+              animate={{ scale: [1, 1.25, 1] }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.5,
+                ease: 'easeInOut',
+              }}
+            >
+              <Heart className="h-3 w-3 fill-pink-500/40 text-pink-400" />
+            </motion.div>
+          </div>
+
+          <div className="flex items-center gap-2 rounded-2xl border border-pink-500/15 bg-black/60 px-3 py-2.5 backdrop-blur-md">
+            <span className="relative flex h-2 w-2 shrink-0 items-center justify-center">
+              <span
+                className={`absolute h-2 w-2 rounded-full ${status.includes('not found')
+                  ? 'bg-rose-500'
+                  : isPlaying
+                    ? 'animate-ping bg-emerald-400'
+                    : 'bg-amber-400'
+                  }`}
+              />
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${status.includes('not found')
+                  ? 'bg-rose-500'
+                  : isPlaying
+                    ? 'bg-emerald-400'
+                    : 'bg-amber-400'
+                  }`}
+              />
+            </span>
+
+            <span
+              className={`truncate text-[10px] font-medium leading-none ${status.includes('not found')
+                ? 'font-bold text-rose-300'
+                : isPlaying
+                  ? 'font-semibold text-emerald-300'
+                  : 'text-pink-200/70'
+                }`}
+            >
+              {status}
+            </span>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
+
   return (
     <div className="relative inline-block text-left z-40" id="musicPlayerWrapper">
       <audio
@@ -146,11 +402,10 @@ export default function AudioEngine() {
         <button
           id="musicToggle"
           onClick={togglePlayback}
-          className={`relative flex cursor-pointer items-center gap-2 rounded-full border border-pink-500/20 p-2 px-3.5 backdrop-blur-md transition-all duration-300 group sm:px-4 ${
-            isPlaying
-              ? 'border-pink-400 bg-pink-500/20 text-pink-300 shadow-lg shadow-pink-500/30'
-              : 'bg-white/5 text-pink-200/70 hover:bg-white/10 hover:text-white'
-          }`}
+          className={`relative flex cursor-pointer items-center gap-2 rounded-full border border-pink-500/20 p-2 px-3.5 backdrop-blur-md transition-all duration-300 group sm:px-4 ${isPlaying
+            ? 'border-pink-400 bg-pink-500/20 text-pink-300 shadow-lg shadow-pink-500/30'
+            : 'bg-white/5 text-pink-200/70 hover:bg-white/10 hover:text-white'
+            }`}
           title={isPlaying ? 'Pause music' : 'Play Melody'}
         >
           {isPlaying ? (
@@ -178,11 +433,10 @@ export default function AudioEngine() {
 
         <button
           onClick={openPlaylist}
-          className={`cursor-pointer rounded-full border border-pink-500/20 p-2 backdrop-blur-md transition-all duration-300 ${
-            showPlaylist
-              ? 'border-pink-400 bg-pink-500/30 text-pink-300 shadow-lg shadow-pink-500/20'
-              : 'bg-white/5 text-pink-200/70 hover:bg-white/10 hover:text-white'
-          }`}
+          className={`cursor-pointer rounded-full border border-pink-500/20 p-2 backdrop-blur-md transition-all duration-300 ${showPlaylist
+            ? 'border-pink-400 bg-pink-500/30 text-pink-300 shadow-lg shadow-pink-500/20'
+            : 'bg-white/5 text-pink-200/70 hover:bg-white/10 hover:text-white'
+            }`}
           title="Show Playlist"
         >
           {showPlaylist ? (
@@ -193,269 +447,32 @@ export default function AudioEngine() {
         </button>
       </div>
 
-      <AnimatePresence>
-        {showPlaylist && (
-          <>
-            {/* Mobile backdrop */}
-            <motion.div
-              className="fixed inset-0 z-[9998] bg-black/45 backdrop-blur-sm sm:hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowPlaylist(false)}
-            />
-
-            <motion.div
-              initial={{
-                opacity: 0,
-                y: 18,
-                scale: 0.96,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                scale: 1,
-              }}
-              exit={{
-                opacity: 0,
-                y: 18,
-                scale: 0.96,
-              }}
-              transition={{ duration: 0.22, ease: 'easeOut' }}
-              className="
-                fixed
-                bottom-3
-                left-3
-                right-3
-                z-[9999]
-                max-h-[82vh]
-                max-w-[calc(100vw-24px)]
-                overflow-hidden
-                rounded-[28px]
-                border
-                border-pink-500/30
-                bg-[#0e0314]/95
-                p-4
-                shadow-2xl
-                shadow-pink-500/25
-                backdrop-blur-3xl
-
-                sm:bottom-auto
-                sm:left-auto
-                sm:right-5
-                sm:top-20
-                sm:w-[350px]
-                sm:p-5
-              "
-            >
-              <button
-                type="button"
+      {showPlaylist &&
+        (isMounted && isMobile
+          ? createPortal(
+            <>
+              <motion.div
+                className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 onClick={() => setShowPlaylist(false)}
-                className="absolute right-3 top-3 z-20 grid h-8 w-8 place-items-center rounded-full border border-pink-300/20 bg-black/40 text-pink-100/80 backdrop-blur-md transition hover:bg-pink-500/20 sm:hidden"
-                title="Close playlist"
-              >
-                <X className="h-4 w-4" />
-              </button>
-
-              <div
-                className="pointer-events-none absolute inset-0 z-0 scale-[1.02] bg-cover bg-center opacity-[0.65]"
-                style={{
-                  backgroundImage: `url(${listeningSongBg})`,
-                  filter: 'blur(1px) brightness(0.7)',
-                }}
               />
-              {/* Softer overlay to see the image better */}
-              <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-[#14021b]/60 via-[#0b0110]/50 to-[#1c0428]/70" />
-              <div className="pointer-events-none absolute -right-10 -top-10 z-0 h-32 w-32 animate-pulse rounded-full bg-pink-500/10 blur-2xl" />
 
-              <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-                <motion.div
-                  animate={{
-                    y: [30, -50],
-                    x: [40, 55],
-                    opacity: [0, 0.45, 0],
-                    scale: [0.8, 1.25, 0.8],
-                  }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 5.5,
-                    ease: 'easeInOut',
-                  }}
-                  className="absolute text-xs font-mono text-pink-400/35"
-                  style={{ bottom: '12%', left: '15%' }}
-                >
-                  ♪
-                </motion.div>
-
-                <motion.div
-                  animate={{
-                    y: [15, -60],
-                    x: [240, 215],
-                    opacity: [0, 0.5, 0],
-                    scale: [1, 1.3, 1],
-                  }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 6.5,
-                    delay: 2.2,
-                    ease: 'easeInOut',
-                  }}
-                  className="absolute text-sm font-mono text-fuchsia-300/30"
-                  style={{ bottom: '18%', left: '55%' }}
-                >
-                  ♫
-                </motion.div>
-
-                <motion.div
-                  animate={{
-                    scale: [1, 1.25, 1],
-                    opacity: [0.15, 0.35, 0.15],
-                  }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 3.2,
-                    ease: 'easeInOut',
-                  }}
-                  className="absolute text-pink-500"
-                  style={{ top: '12%', right: '12%' }}
-                >
-                  <Heart className="h-4 w-4 fill-pink-500/20" />
-                </motion.div>
+              <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
+                {renderPlaylistCard(true)}
               </div>
-
-              <div className="relative z-10 mb-4 flex items-center justify-between border-b border-pink-500/20 pb-3 pr-10 sm:pr-0">
-                <div className="flex min-w-0 items-center gap-2">
-                  <ListMusic className="h-4 w-4 shrink-0 animate-pulse text-pink-400" />
-                  <span className="truncate text-[11px] font-extrabold uppercase tracking-widest text-[#ffd7ed] drop-shadow-[0_0_8px_rgba(236,72,153,0.55)] sm:text-xs">
-                    Sweet Melody Playlist
-                  </span>
-                </div>
-                <Sparkles
-                  className="hidden h-4 w-4 animate-spin text-pink-300/80 sm:block"
-                  style={{ animationDuration: '7s' }}
-                />
-              </div>
-
-              <div className="custom-scrollbar relative z-10 max-h-[48vh] space-y-2 overflow-y-auto pr-1 sm:max-h-[260px]">
-                {tracks.map((track, idx) => {
-                  const isActive = currentTrackIndex === idx;
-
-                  return (
-                    <div
-                      key={track.src}
-                      className={`group/item flex min-w-0 items-center justify-between gap-2 rounded-xl border p-2.5 transition-all duration-300 sm:p-3 ${
-                        isActive
-                          ? 'border-pink-400/40 bg-pink-500/20 text-white shadow-[0_0_12px_rgba(236,72,153,0.18)]'
-                          : 'border-white/5 bg-black/25 text-pink-200/60 hover:border-pink-500/20 hover:bg-pink-500/10 hover:text-pink-100'
-                      }`}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => handleTrackSelect(idx)}
-                        className="flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 py-0.5 text-left outline-none sm:gap-3"
-                      >
-                        <span
-                          className={`shrink-0 font-mono text-[10px] ${
-                            isActive ? 'font-bold text-pink-400' : 'opacity-40'
-                          }`}
-                        >
-                          0{idx + 1}
-                        </span>
-
-                        <span
-                          className={`block min-w-0 flex-1 truncate text-xs font-semibold tracking-wide ${
-                            isActive ? 'font-bold text-pink-100' : ''
-                          }`}
-                        >
-                          {track.title}
-                        </span>
-
-                        {isActive && isPlaying && (
-                          <span className="flex h-3 w-4 shrink-0 items-end gap-0.5 px-1">
-                            <span className="h-2 w-0.5 animate-bounce rounded-full bg-pink-400" />
-                            <span
-                              className="h-3 w-0.5 animate-bounce rounded-full bg-pink-400"
-                              style={{ animationDelay: '0.15s' }}
-                            />
-                            <span
-                              className="h-1.5 w-0.5 animate-bounce rounded-full bg-pink-400"
-                              style={{ animationDelay: '0.3s' }}
-                            />
-                          </span>
-                        )}
-                      </button>
-
-                      <a
-                        href={track.src}
-                        download={`${track.title}.mp3`}
-                        className="ml-1 grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-xl border border-pink-500/15 bg-pink-500/10 text-pink-300 transition-all hover:scale-105 hover:border-pink-500/40 hover:bg-pink-500/35 hover:text-white sm:ml-2"
-                        title={`Download ${track.title}`}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Download className="h-3.5 w-3.5" />
-                      </a>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="relative z-10 mt-4 flex flex-col gap-2.5 border-t border-pink-500/20 pt-4">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] font-bold uppercase leading-none tracking-widest text-pink-300/45">
-                    Player Status
-                  </span>
-
-                  <motion.div
-                    animate={{ scale: [1, 1.25, 1] }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: 1.5,
-                      ease: 'easeInOut',
-                    }}
-                  >
-                    <Heart className="h-3 w-3 fill-pink-500/40 text-pink-400" />
-                  </motion.div>
-                </div>
-
-                <div className="flex items-center gap-2 rounded-2xl border border-pink-500/15 bg-black/60 px-3 py-2.5 backdrop-blur-md">
-                  <span className="relative flex h-2 w-2 shrink-0 items-center justify-center">
-                    <span
-                      className={`absolute h-2 w-2 rounded-full ${
-                        status.includes('not found')
-                          ? 'bg-rose-500'
-                          : isPlaying
-                            ? 'animate-ping bg-emerald-400'
-                            : 'bg-amber-400'
-                      }`}
-                    />
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${
-                        status.includes('not found')
-                          ? 'bg-rose-500'
-                          : isPlaying
-                            ? 'bg-emerald-400'
-                            : 'bg-amber-400'
-                      }`}
-                    />
-                  </span>
-
-                  <span
-                    className={`truncate text-[10px] font-medium leading-none ${
-                      status.includes('not found')
-                        ? 'font-bold text-rose-300'
-                        : isPlaying
-                          ? 'font-semibold text-emerald-300'
-                          : 'text-pink-200/70'
-                    }`}
-                  >
-                    {status}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            </>,
+            document.body,
+          )
+          : isMounted
+            ? createPortal(
+              <div className="fixed right-5 top-20 z-[9999]">
+                {renderPlaylistCard(false)}
+              </div>,
+              document.body,
+            )
+            : null)}
     </div>
   );
 }
