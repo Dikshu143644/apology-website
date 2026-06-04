@@ -6,10 +6,11 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Heart, Sparkles, AlertCircle } from 'lucide-react';
-import messageHeartBg from '../assets/images/A-message-from-my-heart.png';
-import aboutMePhoto from '../assets/images/About-Me.png';
-import listeningMusic from '../assets/images/Dikshu-Listening-Music.png';
-import lookingLeft from '../assets/images/Me-Looking-In-Left-Side.png';
+import messageHeartBg from '../assets/images/optimized/A-message-from-my-heart.webp';
+import aboutMePhoto from '../assets/images/optimized/About-Me.webp';
+import listeningMusic from '../assets/images/optimized/Dikshu-Listening-Music.webp';
+import lookingLeft from '../assets/images/optimized/Me-Looking-In-Left-Side.webp';
+import lookingRight from '../assets/images/optimized/Dikshu-Looking-At-Right-Side.webp';
 import MemoryGallery from './MemoryGallery';
 
 interface ModalProps {
@@ -60,7 +61,7 @@ export function BaseModal({ isOpen, onClose, title, children, bgImage }: ModalPr
             <div
               className="absolute inset-0 -z-10 bg-cover bg-top opacity-[0.80] md:opacity-[0.85] transition-opacity duration-300"
               style={{
-                backgroundImage: `url('${bgImage || "/image/memory-8.png"}')`,
+                backgroundImage: `url('${bgImage || "/image/optimized/memory-8.webp"}')`,
               }}
             />
 
@@ -337,7 +338,7 @@ export function ApologyModals({ activeModal, galleryInitialTab = 'photos', onClo
         isOpen={activeModal === 'matterModal'} 
         onClose={onClose} 
         title="Why You Matter To Me" 
-        bgImage="src/assets/images/Dikshu-Looking-At-Right-Side.png"
+        bgImage={lookingRight}
       >
         <motion.div 
           variants={containerVariants}

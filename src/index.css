@@ -133,6 +133,25 @@ body {
   animation: spin-slow 15s linear infinite;
 }
 
+@keyframes ctaBreath {
+  0%, 100% {
+    filter: brightness(1) saturate(1);
+  }
+  50% {
+    filter: brightness(1.12) saturate(1.08);
+  }
+}
+
+.cta-breath {
+  animation: ctaBreath 4.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-breath {
+    animation: none;
+  }
+}
+
 @keyframes elegantWingFlap {
   0%, 100% {
     transform: scale(1) translateY(0) rotate(-4deg);

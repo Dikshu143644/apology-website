@@ -5,7 +5,7 @@ import {
   Calendar, Monitor, Globe, ShieldAlert, Key, Edit3, 
   Heart, Sparkles, User, LogOut, Check, ArrowRight, ShieldCheck, HelpCircle
 } from 'lucide-react';
-import dikshuBg from '../assets/images/Dikshu-bg.png';
+import dikshuBg from '../assets/images/optimized/Dikshu-bg.webp';
 
 interface ResponseItem {
   id: string;

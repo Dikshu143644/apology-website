@@ -85,15 +85,15 @@ function ButterflyScene({
     let control: THREE.Vector3;
 
     if (isDesktop) {
-      // Land on the left side to avoid covering the face
-      start = new THREE.Vector3(-viewport.width * 0.25, -viewport.height * 0.1, 0);
-      end = new THREE.Vector3(-viewport.width * 0.22, viewport.height * 0.15, 0.5);
-      control = new THREE.Vector3(-viewport.width * 0.35, viewport.height * 0.3, 1.0);
+      // Keep the butterfly above and left of the hero CTAs so both remain clickable.
+      start = new THREE.Vector3(-viewport.width * 0.38, viewport.height * 0.08, 0);
+      end = new THREE.Vector3(-viewport.width * 0.3, viewport.height * 0.22, 0.5);
+      control = new THREE.Vector3(-viewport.width * 0.46, viewport.height * 0.34, 1.0);
     } else {
-      // Land high items on mobile
-      start = new THREE.Vector3(-viewport.width * 0.15, viewport.height * 0.1, 0);
-      end = new THREE.Vector3(-viewport.width * 0.1, viewport.height * 0.3, 0.4);
-      control = new THREE.Vector3(-viewport.width * 0.2, 0.2, 0.6);
+      // On mobile, keep it high so it never covers the hero buttons.
+      start = new THREE.Vector3(-viewport.width * 0.33, viewport.height * 0.18, 0);
+      end = new THREE.Vector3(-viewport.width * 0.22, viewport.height * 0.32, 0.4);
+      control = new THREE.Vector3(-viewport.width * 0.36, viewport.height * 0.4, 0.6);
     }
 
     return { curve: new THREE.QuadraticBezierCurve3(start, control, end), start, end };
@@ -330,7 +330,7 @@ export default function MagicalButterfly() {
   };
 
   return (
-    <div className="absolute inset-0 w-full h-full pointer-events-none select-none z-20">
+    <div className="absolute inset-0 w-full h-full pointer-events-none select-none">
 
       {/* Full-Page Magical Stardust Symphony Overlay */}
       <AnimatePresence>
@@ -425,13 +425,13 @@ export default function MagicalButterfly() {
               triggerFlight();
             }
           }}
-          className="absolute left-[6%] top-[31%] z-[70] h-24 w-28 -translate-y-1/2 cursor-pointer rounded-[28px] border border-pink-300/0 bg-transparent outline-none pointer-events-auto hover:bg-pink-500/[0.035] focus-visible:border-pink-300/50 focus-visible:bg-pink-500/10 focus-visible:ring-2 focus-visible:ring-pink-300/35 sm:left-[8%] sm:top-[33%] sm:h-28 sm:w-32 md:left-[9%] lg:left-[6%] xl:left-[8%]"
+          className="absolute left-[2%] top-[12%] z-[80] h-20 w-24 -translate-y-1/2 cursor-pointer rounded-[28px] border border-pink-300/0 bg-transparent outline-none pointer-events-auto hover:bg-pink-500/[0.035] focus-visible:border-pink-300/50 focus-visible:bg-pink-500/10 focus-visible:ring-2 focus-visible:ring-pink-300/35 sm:left-[5%] sm:top-[27%] sm:h-28 sm:w-32 md:left-[5%] lg:left-[3%] xl:left-[4%]"
         >
           <span className="sr-only">Launch butterfly animation</span>
         </button>
       )}
 
-      <Canvas camera={{ position: [0, 0, 4.2], fov: 48 }} gl={{ antialias: true, alpha: true }} className="w-full h-full pointer-events-none">
+      <Canvas dpr={[1, 1.25]} camera={{ position: [0, 0, 4.2], fov: 48 }} gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }} className="w-full h-full pointer-events-none">
         <ambientLight intensity={0.9} />
         <pointLight position={[5, 5, 5]} intensity={1} color="#ffd4e6" />
         <React.Suspense fallback={null}>

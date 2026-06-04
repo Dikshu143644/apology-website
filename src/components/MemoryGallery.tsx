@@ -6,7 +6,7 @@ import {
   RefreshCw, Move, Info, HelpCircle,
   Play, Pause, Film, Video, Globe, BookOpen, ExternalLink
 } from 'lucide-react';
-import albumAccessBg from '../assets/images/Only-You-Have-My-Access.png';
+import albumAccessBg from '../assets/images/optimized/Only-You-Have-My-Access.webp';
 
 type GalleryTab = 'photos' | 'videos' | 'google-photos';
 
@@ -46,6 +46,9 @@ const DEFAULT_GOOGLE_PHOTOS_ALBUMS: GooglePhotosAlbum[] = [
     url: 'https://photos.app.goo.gl/B3Y6wpJCWPKFuPXo6'
   }
 ];
+
+const IMAGE_AUTOPLAY_MS = 6000;
+const AUTOPLAY_STEP_MS = 50;
 
 export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: MemoryGalleryProps) {
   const [layoutMode, setLayoutMode] = useState<'board' | 'grid'>('board');
@@ -103,6 +106,7 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
   const [autoplayProgress, setAutoplayProgress] = useState<number>(0);
 
   const boardRef = useRef<HTMLDivElement>(null);
+  const lightboxVideoRef = useRef<HTMLVideoElement | null>(null);
   const touchStartX = useRef<number | null>(null);
 
   // Active device screen responsiveness check
@@ -118,42 +122,42 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
   // Our real photos
   const memories: MemoryItem[] = [
     {
-      src: '/image/memory-1.png',
+      src: '/image/optimized/memory-1.webp',
       cap: 'Mehndi Glow',
       desc: 'A festive frame where your shy smile hides behind mehndi, light, and quiet beauty.',
       date: 'Festive Glow',
       type: 'image'
     },
     {
-      src: '/image/memory-2.png',
+      src: '/image/optimized/memory-2.webp',
       cap: 'Pink Floral Calm',
       desc: 'That gentle look in pink feels peaceful, soft, and impossible for my heart to forget.',
       date: 'Soft Portrait',
       type: 'image'
     },
     {
-      src: '/image/memory-3.png',
+      src: '/image/optimized/memory-3.webp',
       cap: 'Flower Frame Smile',
       desc: 'A sweet flower-framed memory carrying the innocent charm that still stays close.',
       date: 'Flower Memory',
       type: 'image'
     },
     {
-      src: '/image/memory-4.png',
+      src: '/image/optimized/memory-4.webp',
       cap: 'Shy Festive Spark',
       desc: 'Your hand, your earrings, and that hidden smile turn this into pure festive grace.',
       date: 'Shy Glow',
       type: 'image'
     },
     {
-      src: '/image/memory-5.png',
+      src: '/image/optimized/memory-5.webp',
       cap: 'Red Dress Radiance',
       desc: 'The red outfit and glowing lights make this feel like a memory from a dream.',
       date: 'Radiant Day',
       type: 'image'
     },
     {
-      src: '/image/memory-11.jpg',
+      src: '/image/optimized/memory-11.webp',
       cap: 'Polaroid Pink',
       desc: 'A framed pink memory, like a page saved carefully because it still means something.',
       date: 'Polaroid',
@@ -161,7 +165,7 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
       objectPosition: '50% 50%'
     },
     {
-      src: '/image/memory-12.jpg',
+      src: '/image/optimized/memory-12.webp',
       cap: 'Peach Saree Quietness',
       desc: 'A peaceful seated moment in soft peach, simple, graceful, and full of quiet emotion.',
       date: 'Gentle Grace',
@@ -169,28 +173,28 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
       objectPosition: '48% 34%'
     },
     {
-      src: '/image/memory-8.png',
+      src: '/image/optimized/memory-8.webp',
       cap: 'Evening Table Glow',
       desc: 'A quiet seated moment with warm lights, deep eyes, and a presence that feels real.',
       date: 'Warm Evening',
       type: 'image'
     },
     {
-      src: '/image/memory-9.jpg',
+      src: '/image/optimized/memory-9.webp',
       cap: 'School Trip Memory',
       desc: 'A happy school-day group frame with the innocence that time can never bring back.',
       date: 'School Days',
       type: 'image'
     },
     {
-      src: '/image/memory-10.jpg',
+      src: '/image/optimized/memory-10.webp',
       cap: 'Yellow Flower Softness',
       desc: 'A soft old frame with a flower by your hair, blurred yet still precious.',
       date: 'Soft Memory',
       type: 'image'
     },
     {
-      src: '/image/memory-20.jpg',
+      src: '/image/optimized/memory-20.webp',
       cap: 'Crowned Innocence',
       desc: 'A childhood-style portrait with a tiny crown sparkle, sweet enough to make time pause.',
       date: 'Childhood Glow',
@@ -329,6 +333,56 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
     }, 2000);
   };
 
+  const goToNextLightboxItem = () => {
+    const activeItems = activeTab === 'videos' ? videoMemories : memories;
+    setSelectedIdx((current) => (current !== null ? (current + 1) % activeItems.length : 0));
+    setAutoplayProgress(0);
+  };
+
+  const handleLightboxVideoLoaded = (event: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = event.currentTarget;
+    setAutoplayProgress(0);
+
+    if (isAutoplay) {
+      video.currentTime = 0;
+      video.play().catch(() => {
+        // Browser autoplay rules can still block playback until the visitor taps play.
+      });
+    }
+  };
+
+  const handleLightboxVideoTimeUpdate = (event: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = event.currentTarget;
+    const duration = Number.isFinite(video.duration) ? video.duration : 0;
+
+    if (duration > 0) {
+      setAutoplayProgress(Math.min(100, (video.currentTime / duration) * 100));
+    }
+  };
+
+  const handleLightboxVideoEnded = () => {
+    setAutoplayProgress(100);
+    if (isAutoplay) {
+      goToNextLightboxItem();
+    }
+  };
+
+  useEffect(() => {
+    if (selectedIdx === null || activeTab !== 'videos') return;
+
+    const video = lightboxVideoRef.current;
+    if (!video) return;
+
+    if (isAutoplay) {
+      if (video.ended && Number.isFinite(video.duration)) {
+        video.currentTime = 0;
+      }
+      video.play().catch(() => undefined);
+    } else {
+      video.pause();
+    }
+  }, [isAutoplay, selectedIdx, activeTab]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -355,21 +409,25 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
       return;
     }
 
-    const intervalTime = 6000; // 6 seconds per item
-    const stepTime = 50; // Progress bar tick cycle
-    const totalTicks = intervalTime / stepTime;
+    const activeItems = activeTab === 'videos' ? videoMemories : memories;
+    const currentItem = activeItems[selectedIdx];
+
+    if (currentItem?.type === 'video') {
+      return;
+    }
+
+    const totalTicks = IMAGE_AUTOPLAY_MS / AUTOPLAY_STEP_MS;
     const increment = 100 / totalTicks;
 
     const timer = setInterval(() => {
       setAutoplayProgress((prev) => {
         if (prev >= 100) {
-          const activeItems = activeTab === 'videos' ? videoMemories : memories;
-          setSelectedIdx((current) => (current !== null ? (current + 1) % activeItems.length : 0));
+          goToNextLightboxItem();
           return 0;
         }
         return prev + increment;
       });
-    }, stepTime);
+    }, AUTOPLAY_STEP_MS);
 
     return () => clearInterval(timer);
   }, [isAutoplay, selectedIdx, activeTab]);
@@ -408,6 +466,17 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
       <div className="relative z-40 bg-gradient-to-b from-black/90 to-transparent p-4 sm:p-6 pb-2 space-y-4">
         
         {/* Navigation Category columns (Tabs) */}
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mx-auto flex w-fit max-w-full items-center gap-2 rounded-full border border-pink-200/15 bg-white/[0.055] px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.16em] text-pink-100/75 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md sm:text-[10px]"
+        >
+          <HelpCircle className="h-3 w-3 shrink-0 text-pink-300" />
+          <span>Choose Section</span>
+          <span className="hidden h-1 w-1 rounded-full bg-pink-300/50 sm:block" />
+          <span className="hidden text-pink-300/70 sm:inline">Photos / Videos / Albums</span>
+        </motion.div>
+
         <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
           
           <button
@@ -507,7 +576,7 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
 
         {/* Dynamic Controls Bar */}
         {activeTab !== 'google-photos' && (
-          <div className="flex items-center justify-between gap-4 max-w-5xl mx-auto pt-2">
+          <div className="flex flex-col items-stretch justify-between gap-2 max-w-5xl mx-auto pt-1 sm:flex-row sm:items-center sm:gap-4 sm:pt-2">
             
             {/* Left Status */}
             <div className="flex items-center gap-2.5 text-left">
@@ -518,14 +587,14 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
             </div>
 
             {/* Right Action buttons */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-end gap-2">
               
               {/* Scramble board layout action */}
               {layoutMode === 'board' && (
                 <button
                   type="button"
                   onClick={handleScramble}
-                  className="px-3 py-1.5 text-[10px] bg-white/5 hover:bg-pink-600/30 border border-white/10 hover:border-pink-500/30 text-pink-200 uppercase font-black tracking-widest rounded-lg flex items-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer"
+                  className="px-2.5 py-1.5 text-[9px] bg-white/5 hover:bg-pink-600/30 border border-white/10 hover:border-pink-500/30 text-pink-200 uppercase font-black tracking-widest rounded-lg flex items-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer sm:px-3 sm:text-[10px]"
                   title="Scramble polaroid arrangements"
                 >
                   <RefreshCw className="h-3 w-3 animate-spin duration-3000" />
@@ -534,11 +603,11 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
               )}
 
               {/* Grid Toggle buttons */}
-              <div className="flex bg-black/60 p-1 rounded-lg border border-white/10">
+              <div className="flex bg-black/60 p-0.5 rounded-lg border border-white/10 sm:p-1">
                 <button
                   type="button"
                   onClick={() => setLayoutMode('board')}
-                  className={`p-1.5 rounded-md transition-all cursor-pointer ${layoutMode === 'board' ? 'bg-pink-600 text-white' : 'text-zinc-500 hover:text-zinc-200'}`}
+                  className={`p-1.5 rounded-md transition-all cursor-pointer sm:p-1.5 ${layoutMode === 'board' ? 'bg-pink-600 text-white' : 'text-zinc-500 hover:text-zinc-200'}`}
                   title="Dreamscape Board layout"
                 >
                   <Move className="h-3.5 w-3.5" />
@@ -546,7 +615,7 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
                 <button
                   type="button"
                   onClick={() => setLayoutMode('grid')}
-                  className={`p-1.5 rounded-md transition-all cursor-pointer ${layoutMode === 'grid' ? 'bg-pink-600 text-white' : 'text-zinc-500 hover:text-zinc-200'}`}
+                  className={`p-1.5 rounded-md transition-all cursor-pointer sm:p-1.5 ${layoutMode === 'grid' ? 'bg-pink-600 text-white' : 'text-zinc-500 hover:text-zinc-200'}`}
                   title="Classic Polaroid Grid layout"
                 >
                   <Grid className="h-3.5 w-3.5" />
@@ -579,6 +648,8 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
                   src={albumAccessBg}
                   alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 h-full w-full object-cover object-[50%_34%] opacity-[0.42] saturate-[1.08] blur-[0.5px] transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/58 via-[#2b1027]/45 to-black/76" />
@@ -660,22 +731,25 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="absolute bottom-4 left-4 z-50 max-w-sm bg-neutral-950/90 backdrop-blur-md p-4 rounded-xl border border-white/10 text-left space-y-2.5 shadow-xl select-none"
+                  className="absolute bottom-3 left-3 right-3 z-50 max-w-[270px] bg-neutral-950/88 backdrop-blur-md p-3 rounded-xl border border-white/10 text-left space-y-2 shadow-xl select-none sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-xs sm:p-4"
                 >
-                  <p className="text-[10px] text-pink-300 font-bold uppercase tracking-widest flex items-center gap-1.5">
-                    <Info className="h-3 w-3" />
-                    Living Memories board
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-[9px] text-pink-300 font-bold uppercase tracking-widest flex items-center gap-1.5 sm:text-[10px]">
+                      <Info className="h-3 w-3" />
+                      Living Board
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setShowHelp(false)}
+                      className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-pink-200 transition hover:bg-pink-500/20"
+                      title="Hide board tip"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <p className="text-[9px] text-zinc-400 leading-snug font-medium sm:text-[10px]">
+                    Tap a card to open. Drag to move. Swipe fullscreen.
                   </p>
-                  <p className="text-[10px] text-zinc-400 leading-normal font-medium">
-                    Every photo slowly sways and breathes inside. Grab to drag. Release to drift. Double click or tap the eye icon to view fullscreen.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setShowHelp(false)}
-                    className="text-[9px] font-bold text-pink-400 hover:text-pink-300 underline uppercase tracking-wider block cursor-pointer"
-                  >
-                    Dismiss
-                  </button>
                 </motion.div>
               )}
 
@@ -753,7 +827,14 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
                       duration-300 
                       hover:shadow-[0_15px_35px_rgba(236,72,153,0.3)]
                       select-none
+                      cursor-grab
+                      active:cursor-grabbing
                     "
+                    onClick={() => {
+                      if (!isMobile) return;
+                      setSelectedIdx(idx);
+                      if (onPhotoClick) onPhotoClick(item.src);
+                    }}
                     onDoubleClick={() => {
                       setSelectedIdx(idx);
                       if (onPhotoClick) onPhotoClick(item.src);
@@ -764,13 +845,11 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
                     <div className="relative aspect-square w-full rounded-none bg-neutral-50 overflow-hidden mb-2.5 border border-neutral-100 flex items-center justify-center">
                       
                       {item.type === 'video' ? (
-                        <motion.video
-                          src={item.src}
-                          poster={item.poster}
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
+                        <motion.img
+                          src={item.poster || item.src}
+                          alt={item.cap}
+                          loading="lazy"
+                          decoding="async"
                           animate={{
                             scale: [1, 1.1, 1.15, 1.1, 1],
                             x: ["0%", "3%", "-2.5%", "1.5%", "0%"],
@@ -790,6 +869,8 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
                           alt={item.cap}
                           referrerPolicy="no-referrer"
                           style={{ objectPosition: item.objectPosition || '50% 50%' }}
+                          loading="lazy"
+                          decoding="async"
                           animate={{
                             scale: [1, 1.1, 1.15, 1.1, 1],
                             x: ["0%", "3%", "-2.5%", "1.5%", "0%"],
@@ -881,13 +962,11 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
                   <div className="relative aspect-square w-full rounded-none bg-[#fdf2f8] overflow-hidden mb-3.5 border border-neutral-100 flex items-center justify-center">
                     
                     {item.type === 'video' ? (
-                      <motion.video
-                        src={item.src}
-                        poster={item.poster}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
+                      <motion.img
+                        src={item.poster || item.src}
+                        alt={item.cap}
+                        loading="lazy"
+                        decoding="async"
                         animate={{
                           scale: [1, 1.08, 1.12, 1.08, 1],
                           x: ["0%", "2%", "-1.5%", "1%", "0%"],
@@ -906,6 +985,8 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
                           alt={item.cap}
                           referrerPolicy="no-referrer"
                           style={{ objectPosition: item.objectPosition || '50% 50%' }}
+                          loading="lazy"
+                          decoding="async"
                           animate={{
                           scale: [1, 1.08, 1.12, 1.08, 1],
                           x: ["0%", "2%", "-1.5%", "1%", "0%"],
@@ -1068,11 +1149,15 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
                     >
                       {currentItem.type === 'video' ? (
                         <motion.video
+                          ref={lightboxVideoRef}
                           src={currentItem.src}
                           poster={currentItem.poster}
                           controls
-                          loop
-                          autoPlay
+                          autoPlay={isAutoplay}
+                          preload="metadata"
+                          onLoadedMetadata={handleLightboxVideoLoaded}
+                          onTimeUpdate={handleLightboxVideoTimeUpdate}
+                          onEnded={handleLightboxVideoEnded}
                           animate={{
                             scale: [1, 1.05, 1.08, 1.05, 1],
                             x: ["0%", "1.5%", "-1.5%", "0.8%", "0%"],
@@ -1227,7 +1312,11 @@ export default function MemoryGallery({ initialTab = 'photos', onPhotoClick }: M
                             {isAutoplay ? <Pause className="h-[18px] w-[18px]" /> : <Play className="h-[18px] w-[18px] fill-current" />}
                           </button>
                           <span className="text-[10px] text-zinc-400 uppercase font-bold tracking-widest">
-                            {isAutoplay ? 'Autoplay story mode' : 'Slide presentation paused'}
+                            {isAutoplay
+                              ? currentItem.type === 'video'
+                                ? 'Playing full video clip'
+                                : 'Autoplay story mode'
+                              : 'Slide presentation paused'}
                           </span>
                         </div>
                         <span className="text-[10px] font-mono font-bold text-pink-400/80">

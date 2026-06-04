@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, Sparkles, User, Lock, HeartHandshake, Mail, Smartphone, Eye, EyeOff } from 'lucide-react';
-import accessBg from '../assets/images/Only-You-Have-My-Access.png';
+import accessBg from '../assets/images/optimized/Only-You-Have-My-Access.webp';
 
 interface LoginPageProps {
   onLogin: (name: string) => void;
@@ -141,7 +141,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
       <div 
         className="fixed inset-0 bg-cover bg-center transition-all duration-1000 scale-[1.02]"
         style={{
-          backgroundImage: "url('/image/memory-8.png')",
+          backgroundImage: "url('/image/optimized/memory-8.webp')",
           filter: 'blur(1.5px) brightness(0.52) saturate(1.04)',
         }}
       />

@@ -1,9 +1,9 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Heart, 
@@ -30,18 +30,21 @@ import AudioEngine from './components/AudioEngine';
 import ButterflyCanvas from './components/ButterflyCanvas';
 import HeartPetals from './components/HeartPetals';
 import NavEmojiBurst from './components/NavEmojiBurst';
-import { ApologyModals } from './components/ApologyModals';
-import AdminPanel from './components/AdminPanel';
-import dikshuBg from './assets/images/Dikshu-bg.png';
-import messageHeartBg from './assets/images/A-message-from-my-heart.png';
-import aboutMePhoto from './assets/images/About-Me.png';
-import listeningMusic from './assets/images/Dikshu-Listening-Music.png';
-import lookingLeft from './assets/images/Me-Looking-In-Left-Side.png';
-import lookingRight from './assets/images/Dikshu-Looking-At-Right-Side.png';
-import iLoveYouDikshu from './assets/images/I-Love-You-Dikshu.png';
+import dikshuBg from './assets/images/optimized/Dikshu-bg.webp';
+import messageHeartBg from './assets/images/optimized/A-message-from-my-heart.webp';
+import aboutMePhoto from './assets/images/optimized/About-Me.webp';
+import listeningMusic from './assets/images/optimized/Dikshu-Listening-Music.webp';
+import lookingLeft from './assets/images/optimized/Me-Looking-In-Left-Side.webp';
+import lookingRight from './assets/images/optimized/Dikshu-Looking-At-Right-Side.webp';
+import iLoveYouDikshu from './assets/images/optimized/I-Love-You-Dikshu.webp';
 import LoginPage from './components/LoginPage';
-import MagicalBellJar3D from './components/MagicalBellJar3D';
-import MagicalButterfly from './components/MagicalButterfly';
+
+const AdminPanel = lazy(() => import('./components/AdminPanel'));
+const MagicalBellJar3D = lazy(() => import('./components/MagicalBellJar3D'));
+const MagicalButterfly = lazy(() => import('./components/MagicalButterfly'));
+const ApologyModals = lazy(() =>
+  import('./components/ApologyModals').then((module) => ({ default: module.ApologyModals }))
+);
 
 export default function App() {
   const isAdminRoute = window.location.pathname === '/admin';
@@ -57,12 +60,12 @@ export default function App() {
   const [celebrationActive, setCelebrationActive] = useState(false);
   const [galleryInitialTab, setGalleryInitialTab] = useState<'photos' | 'videos' | 'google-photos'>('photos');
   const momentFrameImages = [
-    { src: '/image/memory-1.png', pos: '50% 34%' },
-    { src: '/image/memory-2.png', pos: '50% 30%' },
-    { src: '/image/memory-3.png', pos: '50% 31%' },
-    { src: '/image/memory-4.png', pos: '50% 38%' },
-    { src: '/image/memory-11.jpg', pos: '50% 50%' },
-    { src: '/image/memory-12.jpg', pos: '48% 34%' },
+    { src: '/image/optimized/memory-1.webp', pos: '50% 34%' },
+    { src: '/image/optimized/memory-2.webp', pos: '50% 30%' },
+    { src: '/image/optimized/memory-3.webp', pos: '50% 31%' },
+    { src: '/image/optimized/memory-4.webp', pos: '50% 38%' },
+    { src: '/image/optimized/memory-11.webp', pos: '50% 50%' },
+    { src: '/image/optimized/memory-12.webp', pos: '48% 34%' },
   ];
 
   const handleLogin = (name: string) => {
@@ -71,6 +74,10 @@ export default function App() {
     localStorage.removeItem('dikshu_visitor_code');
     setIsAuthenticated(true);
   };
+
+  const ambientFallback = (
+    <div className="h-[360px] w-full max-w-[420px] rounded-[28px] border border-pink-300/10 bg-white/[0.03] backdrop-blur-md animate-pulse" />
+  );
 
   // Disable body scroll when mobile menu is open
   useEffect(() => {
@@ -152,7 +159,11 @@ export default function App() {
   };
 
   if (isAdminRoute) {
-    return <AdminPanel isFullScreen={true} />;
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-[#05010a] text-pink-100" />}>
+        <AdminPanel isFullScreen={true} />
+      </Suspense>
+    );
   }
 
   if (!isAuthenticated) {
@@ -185,7 +196,7 @@ export default function App() {
           {/* Logo */}
           <div className="relative z-10 flex items-center gap-1.5 cursor-pointer group" onClick={() => handleLinkClick('#home')}>
             <span className="font-cinzel text-lg sm:text-xl md:text-2xl font-black tracking-[0.2em] text-white group-hover:text-pink-300 transition-all duration-300">
-              OMKAR <span className="text-pink-500 animate-pulse">💖</span>
+              OMKAR <span className="text-pink-500 animate-pulse">ðŸ’–</span>
             </span>
           </div>
 
@@ -208,7 +219,7 @@ export default function App() {
             {/* Romantic Synth Engine Controller */}
             <AudioEngine />
 
-            {/* "For You 💖" button */}
+            {/* "For You ðŸ’–" button */}
             <button
               onClick={() => setActiveModal('messageModal')}
               className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/5 text-pink-200 text-[10px] font-bold uppercase tracking-widest hover:border-pink-500/40 hover:bg-pink-500/10 hover:shadow-[0_0_15px_rgba(236,72,153,0.2)] transition-all active:scale-95 duration-300 cursor-pointer group"
@@ -256,7 +267,7 @@ export default function App() {
                 onClick={() => { setMobileMenuOpen(false); setActiveModal('messageModal'); }}
                 className="relative z-10 w-full mt-2 py-3 px-6 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-black uppercase tracking-[0.2em] rounded-full text-[10px] shadow-[0_8px_20px_rgba(236,72,153,0.3)] active:scale-95 transition-all"
               >
-                Read Heart Message 💌
+                Read Heart Message ðŸ’Œ
               </button>
             </motion.div>
           )}
@@ -265,7 +276,9 @@ export default function App() {
 
       {/* HERO SECTION */}
       <section id="home" className="min-h-screen flex items-center justify-center pt-24 pb-12 px-6 sm:px-12 relative z-10">
-        <MagicalButterfly />
+        <Suspense fallback={null}>
+          <MagicalButterfly />
+        </Suspense>
         <div className="relative z-30 w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Hero Content Left */}
@@ -280,7 +293,7 @@ export default function App() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-300 to-purple-400 font-playfair italic font-medium tracking-normal">
                 I'm Sorry...
               </span>
-              <span className="inline-block animate-bounce ml-4 text-pink-500">💔</span>
+              <span className="inline-block animate-bounce ml-4 text-pink-500">ðŸ’”</span>
             </h1>
 
             <p className="text-zinc-400 font-poppins text-base sm:text-lg md:text-xl font-light leading-relaxed max-w-2xl">
@@ -349,6 +362,8 @@ export default function App() {
                     alt="Dikshu"
                     onError={() => handleImgError(dikshuBg)}
                     referrerPolicy="no-referrer"
+                    loading="eager"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-all duration-1000 ease-out brightness-[0.9] group-hover:brightness-100"
                   />
                 ) : (
@@ -411,6 +426,8 @@ export default function App() {
                   src={aboutMePhoto}
                   alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover object-[50%_43%] opacity-[0.64] saturate-[1.08] blur-[0.5px] transition-transform duration-1000 group-hover:scale-110 sm:object-[50%_42%] lg:object-[50%_48%]"
                 />
               </div>
@@ -436,10 +453,12 @@ export default function App() {
               <div className="relative z-10 pt-8">
                 <button
                   onClick={() => setActiveModal('aboutModal')}
-                  className="w-full py-3 px-5 rounded-full border border-white/15 bg-white/[0.08] hover:bg-pink-500/10 text-pink-100 text-xs font-bold uppercase tracking-widest transition-all hover:border-pink-400/35 cursor-pointer flex items-center justify-center gap-2 duration-300 group/btn shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                  className="group/btn cta-breath relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full border border-cyan-200/24 bg-[linear-gradient(135deg,rgba(14,165,233,0.22),rgba(255,255,255,0.075),rgba(6,182,212,0.12))] px-5 py-3 text-xs font-black uppercase tracking-widest text-cyan-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_12px_26px_rgba(8,145,178,0.16)] backdrop-blur-[6px] transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-200/45 hover:bg-cyan-400/12 hover:shadow-[0_16px_34px_rgba(8,145,178,0.25)] active:scale-95 cursor-pointer"
                 >
-                  <span>Know My Soul</span>
-                  <ChevronRight className="h-3 w-3 text-pink-500 transition-transform group-hover/btn:translate-x-1" />
+                  <span className="pointer-events-none absolute inset-y-0 -left-12 w-10 rotate-12 bg-white/20 blur-md transition-transform duration-700 group-hover/btn:translate-x-[260px]" />
+                  <Compass className="relative h-3.5 w-3.5 text-cyan-200 transition-transform duration-300 group-hover/btn:rotate-12" />
+                  <span className="relative">Know My Soul</span>
+                  <span className="relative rounded-full border border-cyan-100/20 bg-white/10 px-2 py-0.5 text-[8px] text-cyan-100/80">Tap</span>
                 </button>
               </div>
             </motion.div>
@@ -457,6 +476,8 @@ export default function App() {
                   src={iLoveYouDikshu}
                   alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover object-[50%_28%] opacity-[0.68] saturate-[1.1] blur-[0.5px] transition-transform duration-1000 group-hover:scale-110 sm:object-[50%_28%] lg:object-[50%_31%]"
                 />
               </div>
@@ -474,16 +495,18 @@ export default function App() {
                 {/* Visual miniature timeline preview cards */}
                 <div className="grid grid-cols-2 gap-4 pt-2">
                   {[
-                    { id: 1, text: 'Childhood Days', desc: 'Innocent laughter', src: '/image/memory-11.jpg', pos: '50% 52%' },
-                    { id: 2, text: 'School Years', desc: 'Shared dreams', src: '/image/memory-12.jpg', pos: '48% 34%' },
-                    { id: 3, text: 'The Shift', desc: 'Silent change', src: '/image/memory-9.jpg', pos: '50% 43%' },
-                    { id: 4, text: 'This Moment', desc: 'Honest words', src: '/image/memory-10.jpg', pos: '50% 32%' },
+                    { id: 1, text: 'Childhood Days', desc: 'Innocent laughter', src: '/image/optimized/memory-11.webp', pos: '50% 52%' },
+                    { id: 2, text: 'School Years', desc: 'Shared dreams', src: '/image/optimized/memory-12.webp', pos: '48% 34%' },
+                    { id: 3, text: 'The Shift', desc: 'Silent change', src: '/image/optimized/memory-9.webp', pos: '50% 43%' },
+                    { id: 4, text: 'This Moment', desc: 'Honest words', src: '/image/optimized/memory-10.webp', pos: '50% 32%' },
                   ].map((p) => (
                     <div key={p.id} className="min-h-[78px] p-4 rounded-2xl bg-white/[0.10] backdrop-blur-sm border border-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] relative overflow-hidden flex flex-col justify-end text-left group/mini">
                       <img
                         src={p.src}
                         alt=""
                         aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
                         className="absolute inset-0 h-full w-full object-cover opacity-[0.58] saturate-[1.08] transition-transform duration-700 group-hover/mini:scale-110"
                         style={{ objectPosition: p.pos }}
                       />
@@ -503,10 +526,12 @@ export default function App() {
                     setGalleryInitialTab('google-photos');
                     setActiveModal('galleryModal');
                   }}
-                  className="w-full py-3 px-5 rounded-full border border-white/15 bg-white/[0.08] hover:bg-pink-500/10 text-pink-100 text-xs font-bold uppercase tracking-widest transition-all hover:border-pink-400/35 cursor-pointer flex items-center justify-center gap-2 duration-300 group/btn shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                  className="group/btn cta-breath relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full border border-amber-200/24 bg-[linear-gradient(135deg,rgba(245,158,11,0.20),rgba(255,255,255,0.075),rgba(244,63,94,0.14))] px-5 py-3 text-xs font-black uppercase tracking-widest text-amber-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_12px_26px_rgba(245,158,11,0.14)] backdrop-blur-[6px] transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-200/45 hover:bg-amber-300/12 hover:shadow-[0_16px_34px_rgba(245,158,11,0.22)] active:scale-95 cursor-pointer"
                 >
-                  <span>Travel Back In Time</span>
-                  <BookOpen className="h-3.5 w-3.5 text-pink-300 transition-transform duration-300 group-hover/btn:scale-110" />
+                  <span className="pointer-events-none absolute inset-y-0 -left-12 w-10 rotate-12 bg-white/20 blur-md transition-transform duration-700 group-hover/btn:translate-x-[280px]" />
+                  <BookOpen className="relative h-3.5 w-3.5 text-amber-200 transition-transform duration-300 group-hover/btn:scale-110" />
+                  <span className="relative">Travel Back In Time</span>
+                  <span className="relative rounded-full border border-amber-100/20 bg-white/10 px-2 py-0.5 text-[8px] text-amber-100/80">Album</span>
                 </button>
               </div>
             </motion.div>
@@ -527,6 +552,8 @@ export default function App() {
                   src={lookingRight}
                   alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover object-[50%_31%] opacity-[0.58] saturate-[1.08] blur-[0.5px] transition-transform duration-1000 group-hover:scale-110 sm:object-[50%_32%] lg:object-[50%_50%]"
                 />
               </div>
@@ -564,9 +591,12 @@ export default function App() {
               <div className="relative z-10 pt-8">
                 <button
                   onClick={() => setActiveModal('matterModal')}
-                  className="w-full py-3 px-5 rounded-full border border-white/10 bg-white/5 hover:bg-pink-500/10 text-pink-200 text-xs font-bold uppercase tracking-widest transition-all hover:border-pink-500/30 cursor-pointer flex items-center justify-center gap-1 duration-300"
+                  className="group/btn cta-breath relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full border border-fuchsia-200/24 bg-[linear-gradient(135deg,rgba(217,70,239,0.22),rgba(255,255,255,0.07),rgba(236,72,153,0.14))] px-5 py-3 text-xs font-black uppercase tracking-widest text-fuchsia-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_12px_26px_rgba(217,70,239,0.16)] backdrop-blur-[6px] transition-all duration-300 hover:-translate-y-0.5 hover:border-fuchsia-200/45 hover:bg-fuchsia-400/12 hover:shadow-[0_16px_34px_rgba(217,70,239,0.24)] active:scale-95 cursor-pointer"
                 >
-                  <span>Explore Deeply</span>
+                  <span className="pointer-events-none absolute inset-y-0 -left-12 w-10 rotate-12 bg-white/20 blur-md transition-transform duration-700 group-hover/btn:translate-x-[240px]" />
+                  <Heart className="relative h-3.5 w-3.5 fill-fuchsia-200/40 text-fuchsia-200 transition-transform duration-300 group-hover/btn:scale-110" />
+                  <span className="relative">Explore Deeply</span>
+                  <span className="relative rounded-full border border-fuchsia-100/20 bg-white/10 px-2 py-0.5 text-[8px] text-fuchsia-100/80">Open</span>
                 </button>
               </div>
             </motion.div>
@@ -590,6 +620,8 @@ export default function App() {
                   src={listeningMusic}
                   alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover object-[50%_40%] opacity-[0.58] saturate-[1.06] blur-[0.5px] transition-transform duration-1000 group-hover:scale-110 sm:object-[50%_38%] lg:object-[50%_42%]"
                 />
               </div>
@@ -626,10 +658,12 @@ export default function App() {
               <div className="relative z-10 pt-8">
                 <button
                   onClick={() => setActiveModal('promiseModal')}
-                  className="w-full py-3.5 px-6 rounded-full border border-white/10 bg-white/[0.07] hover:bg-pink-500/10 text-pink-200 text-xs font-black uppercase tracking-[0.2em] transition-all hover:border-pink-400/35 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_12px_24px_rgba(0,0,0,0.2)] cursor-pointer flex items-center justify-center gap-2 duration-300 group/btn"
+                  className="group/btn cta-breath relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full border border-emerald-200/24 bg-[linear-gradient(135deg,rgba(16,185,129,0.20),rgba(255,255,255,0.07),rgba(20,184,166,0.13))] px-6 py-3.5 text-xs font-black uppercase tracking-[0.2em] text-emerald-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_12px_26px_rgba(16,185,129,0.15)] backdrop-blur-[6px] transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-200/45 hover:bg-emerald-400/12 hover:shadow-[0_16px_34px_rgba(16,185,129,0.24)] active:scale-95 cursor-pointer"
                 >
-                  <span>Read My Promise</span>
-                  <Heart className="h-4 w-4 text-pink-300 fill-pink-500/30 transition-transform duration-300 group-hover/btn:scale-110" />
+                  <span className="pointer-events-none absolute inset-y-0 -left-12 w-10 rotate-12 bg-white/20 blur-md transition-transform duration-700 group-hover/btn:translate-x-[260px]" />
+                  <CheckCircle className="relative h-4 w-4 text-emerald-200 transition-transform duration-300 group-hover/btn:scale-110" />
+                  <span className="relative">Read My Promise</span>
+                  <span className="relative rounded-full border border-emerald-100/20 bg-white/10 px-2 py-0.5 text-[8px] text-emerald-100/80">Read</span>
                 </button>
               </div>
             </motion.div>
@@ -646,6 +680,8 @@ export default function App() {
                   src={messageHeartBg}
                   alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover object-[50%_39%] opacity-[0.55] saturate-[1.08] blur-[0.5px] transition-transform duration-2000 group-hover:scale-105 sm:object-[50%_36%] lg:object-[50%_42%]"
                 />
               </div>
@@ -698,10 +734,12 @@ export default function App() {
               <div className="relative z-10 w-full pt-4">
                 <button
                   onClick={() => setActiveModal('messageModal')}
-                  className="w-full py-4 px-8 rounded-full border border-white/15 bg-white/[0.075] hover:bg-pink-500/10 text-white font-black uppercase tracking-[0.2em] text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_14px_28px_rgba(0,0,0,0.22)] hover:border-pink-400/35 cursor-pointer flex items-center justify-center gap-3 transition-all duration-300 group/btn active:scale-95"
+                  className="group/btn cta-breath relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-full border border-violet-200/24 bg-[linear-gradient(135deg,rgba(139,92,246,0.22),rgba(255,255,255,0.075),rgba(59,130,246,0.13))] px-8 py-4 text-xs font-black uppercase tracking-[0.2em] text-violet-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_14px_30px_rgba(139,92,246,0.18)] backdrop-blur-[6px] transition-all duration-300 hover:-translate-y-0.5 hover:border-violet-200/45 hover:bg-violet-400/12 hover:shadow-[0_18px_36px_rgba(139,92,246,0.25)] active:scale-95 cursor-pointer"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform">Read My Soul's Letter</span>
-                  <MessageCircle className="h-4 w-4 text-pink-200 transition-transform duration-300 group-hover/btn:scale-110" />
+                  <span className="pointer-events-none absolute inset-y-0 -left-12 w-10 rotate-12 bg-white/20 blur-md transition-transform duration-700 group-hover/btn:translate-x-[300px]" />
+                  <span className="relative transition-transform group-hover/btn:translate-x-0.5">Read My Soul's Letter</span>
+                  <MessageCircle className="relative h-4 w-4 text-violet-100 transition-transform duration-300 group-hover/btn:scale-110" />
+                  <span className="relative rounded-full border border-violet-100/20 bg-white/10 px-2 py-0.5 text-[8px] text-violet-100/80">Open</span>
                 </button>
               </div>
             </motion.div>
@@ -718,6 +756,8 @@ export default function App() {
                   src={lookingLeft}
                   alt=""
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover object-[50%_38%] opacity-[0.52] saturate-[1.06] blur-[0.5px] transition-transform duration-1000 group-hover:scale-110 sm:object-[50%_35%] lg:object-[50%_45%]"
                 />
               </div>
@@ -741,6 +781,8 @@ export default function App() {
                         src={item.src}
                         alt={`Memory frame ${i + 1}`}
                         style={{ objectPosition: item.pos }}
+                        loading="lazy"
+                        decoding="async"
                         className="h-full w-full object-cover grayscale-[18%] transition-all duration-700 group-hover/thumb:scale-110 group-hover/thumb:grayscale-0"
                       />
                       <div className="absolute inset-0 bg-gradient-to-tr from-pink-950/45 via-black/10 to-white/5 transition-opacity duration-500 group-hover/thumb:opacity-40" />
@@ -759,10 +801,12 @@ export default function App() {
                     setGalleryInitialTab('photos');
                     setActiveModal('galleryModal');
                   }}
-                  className="w-full py-3.5 px-6 rounded-full border border-white/10 bg-white/5 hover:bg-pink-500/10 text-pink-200 text-xs font-black uppercase tracking-widest transition-all hover:border-pink-500/30 cursor-pointer flex items-center justify-center gap-2 duration-300"
+                  className="group/btn cta-breath relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full border border-rose-200/24 bg-[linear-gradient(135deg,rgba(251,113,133,0.22),rgba(255,255,255,0.07),rgba(249,115,22,0.13))] px-6 py-3.5 text-xs font-black uppercase tracking-widest text-rose-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_12px_26px_rgba(251,113,133,0.16)] backdrop-blur-[6px] transition-all duration-300 hover:-translate-y-0.5 hover:border-rose-200/45 hover:bg-rose-400/12 hover:shadow-[0_16px_34px_rgba(251,113,133,0.24)] active:scale-95 cursor-pointer"
                 >
-                  <span>Open Gallery</span>
-                  <span className="text-sm">🖼️</span>
+                  <span className="pointer-events-none absolute inset-y-0 -left-12 w-10 rotate-12 bg-white/20 blur-md transition-transform duration-700 group-hover/btn:translate-x-[230px]" />
+                  <ImageIcon className="relative h-3.5 w-3.5 text-rose-100 transition-transform duration-300 group-hover/btn:scale-110" />
+                  <span className="relative">Open Gallery</span>
+                  <span className="relative rounded-full border border-rose-100/20 bg-white/10 px-2 py-0.5 text-[8px] text-rose-100/80">View</span>
                 </button>
               </div>
             </motion.div>
@@ -806,27 +850,29 @@ export default function App() {
                 <div className="flex flex-wrap items-center justify-center gap-6 pt-6">
                   <button
                     onClick={() => handleForgiveChoice('yes')}
-                    className={`px-10 py-5 font-black uppercase tracking-[0.2em] rounded-full text-sm shadow-2xl cursor-pointer transition-all duration-500 active:scale-95 flex items-center gap-3 relative overflow-hidden group/btn ${
+                    className={`px-10 py-5 font-black uppercase tracking-[0.2em] rounded-full text-sm shadow-2xl cursor-pointer transition-all duration-500 active:scale-95 flex items-center gap-3 relative overflow-hidden group/btn cta-breath hover:-translate-y-1 ${
                       forgiveResponse === 'yes'
                         ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-emerald-500/40'
                         : 'bg-gradient-to-r from-pink-500 via-fuchsia-600 to-purple-600 text-white shadow-pink-500/30 hover:shadow-pink-500/60'
                     }`}
                   >
                     <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
+                    <span className="absolute -inset-1 rounded-full border border-pink-200/20 opacity-0 transition-opacity duration-300 group-hover/btn:opacity-100" />
                     <span className="relative z-10">Yes, I Forgive You</span>
-                    <span className="relative z-10 text-xl">{forgiveResponse === 'yes' ? '✨💖' : '💖'}</span>
+                    <span className="relative z-10 text-xl">{forgiveResponse === 'yes' ? 'âœ¨ðŸ’–' : 'ðŸ’–'}</span>
                   </button>
 
                   <button
                     onClick={() => handleForgiveChoice('thinking')}
-                    className={`px-10 py-5 font-black uppercase tracking-[0.2em] rounded-full text-xs cursor-pointer transition-all duration-500 backdrop-blur-md relative overflow-hidden group/btn-alt ${
+                    className={`px-10 py-5 font-black uppercase tracking-[0.2em] rounded-full text-xs cursor-pointer transition-all duration-500 backdrop-blur-[6px] relative overflow-hidden group/btn-alt cta-breath hover:-translate-y-1 ${
                       forgiveResponse === 'thinking'
                         ? 'border border-amber-500/50 bg-amber-500/20 text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.2)]'
-                        : 'border border-white/10 hover:border-pink-500/30 bg-white/5 text-pink-200'
+                        : 'border border-amber-200/18 hover:border-amber-300/38 bg-amber-100/[0.055] text-amber-100/85 hover:bg-amber-300/10'
                     }`}
                   >
+                    <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn-alt:translate-y-0 transition-transform duration-300" />
                     <span className="relative z-10">Still Thinking...</span>
-                    {forgiveResponse === 'thinking' && <span className="ml-2 relative z-10 animate-pulse">⌛</span>}
+                    {forgiveResponse === 'thinking' && <span className="ml-2 relative z-10 animate-pulse">âŒ›</span>}
                   </button>
                 </div>
 
@@ -850,16 +896,16 @@ export default function App() {
                       {/* Sparkly decorative floating stars in YES card background */}
                       {forgiveResponse === 'yes' && (
                         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                          <div className="absolute top-4 left-10 text-emerald-400/20 text-2xl animate-pulse">✨</div>
-                          <div className="absolute bottom-6 right-12 text-teal-400/15 text-3xl animate-bounce delay-700">🌸</div>
-                          <div className="absolute top-12 right-20 text-emerald-300/10 text-lg animate-ping">💖</div>
+                          <div className="absolute top-4 left-10 text-emerald-400/20 text-2xl animate-pulse">âœ¨</div>
+                          <div className="absolute bottom-6 right-12 text-teal-400/15 text-3xl animate-bounce delay-700">ðŸŒ¸</div>
+                          <div className="absolute top-12 right-20 text-emerald-300/10 text-lg animate-ping">ðŸ’–</div>
                         </div>
                       )}
 
                         {forgiveResponse === 'yes' ? (
                           <div className="space-y-4 relative z-10">
                             <div className="flex flex-col items-center gap-4">
-                              <div className="h-16 w-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-3xl shadow-[0_0_20px_rgba(16,185,129,0.3)]">🥺</div>
+                              <div className="h-16 w-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-3xl shadow-[0_0_20px_rgba(16,185,129,0.3)]">ðŸ¥º</div>
                               <h4 className="font-cinzel text-2xl font-black text-emerald-300 tracking-[0.2em] uppercase">
                                 My World Finds Its Peace
                               </h4>
@@ -868,12 +914,12 @@ export default function App() {
                               Thank you, Dikshu. Your forgiveness is the most precious gift light has ever touched. I will honor your boundaries and protect your peace with my soul. You are, and always will be, respected above all else.
                             </p>
                             <div className="pt-1.5 flex items-center gap-1 text-xs text-emerald-400 font-mono">
-                              <span>✨ Trust restored & protected forever</span>
+                              <span>âœ¨ Trust restored & protected forever</span>
                             </div>
                           </div>
                         ) : (
                           <div className="space-y-1 relative z-10">
-                            <h4 className="font-serif text-base font-bold text-pink-200">Take all the time you need... ⌛</h4>
+                            <h4 className="font-serif text-base font-bold text-pink-200">Take all the time you need... âŒ›</h4>
                             <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
                               I completely understand. Your comfort, space, and peace are the absolute most important things to me. I will never push you. I will wait at a respectful distance, praying for your happiness and laughing always.
                             </p>
@@ -886,7 +932,9 @@ export default function App() {
 
               {/* Magical interactive 3D Glass Jar Dome Right */}
               <div className="lg:col-span-12 flex w-full justify-center py-6">
-                <MagicalBellJar3D />
+                <Suspense fallback={ambientFallback}>
+                  <MagicalBellJar3D />
+                </Suspense>
               </div>
 
             </div>
@@ -900,14 +948,14 @@ export default function App() {
         <div className="max-w-6xl mx-auto flex flex-col items-center gap-3">
           <div className="flex items-center gap-1">
             <span className="font-serif font-black tracking-widest text-pink-300 text-sm">FOR DIKSHU</span>
-            <span>💖</span>
+            <span>ðŸ’–</span>
           </div>
           <p className="font-medium text-pink-200/40">
             Made with apology, honesty, respect, and infinite hope.
           </p>
           <div className="flex flex-col items-center gap-1">
             <p className="text-[10px] font-mono text-zinc-600">
-              © {new Date().getFullYear()} Omkar. All decisions respected.
+              Â© {new Date().getFullYear()} Omkar. All decisions respected.
             </p>
             <div className="flex items-center gap-4 mt-1">
               <button
@@ -933,21 +981,29 @@ export default function App() {
       </footer>
 
       {/* APOLOGY OVERLAY MODALS SYSTEM */}
-      <ApologyModals 
-        activeModal={activeModal} 
-        galleryInitialTab={galleryInitialTab}
-        onClose={() => setActiveModal(null)} 
-      />
+      {activeModal && (
+        <Suspense fallback={null}>
+          <ApologyModals
+            activeModal={activeModal}
+            galleryInitialTab={galleryInitialTab}
+            onClose={() => setActiveModal(null)}
+          />
+        </Suspense>
+      )}
 
       {/* SECURE ADMIN RESPONSE CONSOLE */}
-      <AdminPanel 
-        isOpen={adminOpen} 
-        onClose={() => setAdminOpen(false)} 
-        onLogoutSite={() => {
-          localStorage.removeItem('dikshu_authenticated');
-          window.location.reload();
-        }}
-      />
+      {adminOpen && (
+        <Suspense fallback={null}>
+          <AdminPanel
+            isOpen={adminOpen}
+            onClose={() => setAdminOpen(false)}
+            onLogoutSite={() => {
+              localStorage.removeItem('dikshu_authenticated');
+              window.location.reload();
+            }}
+          />
+        </Suspense>
+      )}
 
     </div>
   );

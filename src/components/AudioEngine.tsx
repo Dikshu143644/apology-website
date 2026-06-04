@@ -12,7 +12,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import listeningSongBg from '../assets/images/Listening-song.png';
+import listeningSongBg from '../assets/images/optimized/Listening-song.webp';
 
 const tracks = [
   {
