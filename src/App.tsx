@@ -66,6 +66,12 @@ export default function App() {
     { src: '/image/optimized/memory-4.webp', pos: '50% 38%' },
     { src: '/image/optimized/memory-11.webp', pos: '50% 50%' },
     { src: '/image/optimized/memory-12.webp', pos: '48% 34%' },
+    { src: '/image/video-thumb-1.jpg', pos: '50% 50%' },
+    { src: '/image/video-thumb-2.jpg', pos: '50% 50%' },
+    { src: '/image/video-thumb-3.jpg', pos: '50% 50%' },
+    { src: '/image/video-thumb-4.jpg', pos: '50% 50%' },
+    { src: '/image/video-thumb-5.jpg', pos: '50% 50%' },
+    { src: '/image/video-thumb-6.jpg', pos: '50% 50%' },
   ];
 
   const handleLogin = (name: string) => {
@@ -196,7 +202,7 @@ export default function App() {
           {/* Logo */}
           <div className="relative z-10 flex items-center gap-1.5 cursor-pointer group" onClick={() => handleLinkClick('#home')}>
             <span className="font-cinzel text-lg sm:text-xl md:text-2xl font-black tracking-[0.2em] text-white group-hover:text-pink-300 transition-all duration-300">
-              OMKAR <span className="text-pink-500 animate-pulse">ðŸ’–</span>
+              OMKAR <span className="text-pink-500 animate-pulse">💖</span>
             </span>
           </div>
 
@@ -219,7 +225,7 @@ export default function App() {
             {/* Romantic Synth Engine Controller */}
             <AudioEngine />
 
-            {/* "For You ðŸ’–" button */}
+            {/* "For You 💖" button */}
             <button
               onClick={() => setActiveModal('messageModal')}
               className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/5 text-pink-200 text-[10px] font-bold uppercase tracking-widest hover:border-pink-500/40 hover:bg-pink-500/10 hover:shadow-[0_0_15px_rgba(236,72,153,0.2)] transition-all active:scale-95 duration-300 cursor-pointer group"
@@ -267,7 +273,7 @@ export default function App() {
                 onClick={() => { setMobileMenuOpen(false); setActiveModal('messageModal'); }}
                 className="relative z-10 w-full mt-2 py-3 px-6 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-black uppercase tracking-[0.2em] rounded-full text-[10px] shadow-[0_8px_20px_rgba(236,72,153,0.3)] active:scale-95 transition-all"
               >
-                Read Heart Message ðŸ’Œ
+                Read Heart Message 💌
               </button>
             </motion.div>
           )}
@@ -293,7 +299,7 @@ export default function App() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-300 to-purple-400 font-playfair italic font-medium tracking-normal">
                 I'm Sorry...
               </span>
-              <span className="inline-block animate-bounce ml-4 text-pink-500">ðŸ’”</span>
+              <span className="inline-block animate-bounce ml-4 text-pink-500">💔</span>
             </h1>
 
             <p className="text-zinc-400 font-poppins text-base sm:text-lg md:text-xl font-light leading-relaxed max-w-2xl">
@@ -770,12 +776,12 @@ export default function App() {
                   <span className="text-[10px] font-black uppercase font-poppins tracking-[0.2em] text-pink-400/50">FRAMES</span>
                 </div>
 
-                {/* Grid of 6 small memory thumbnails */}
-                <div className="grid grid-cols-3 gap-3 pt-1">
+                {/* Grid of 12 small memory and video thumbnails */}
+                <div className="grid grid-cols-3 gap-2.5 pt-1">
                   {momentFrameImages.map((item, i) => (
                     <div
                       key={item.src}
-                      className="aspect-square rounded-2xl bg-black/40 overflow-hidden border border-white/10 relative hover:border-pink-500/40 hover:scale-110 transition-all duration-500 group/thumb"
+                      className="aspect-square rounded-xl bg-black/40 overflow-hidden border border-white/10 relative hover:border-pink-500/40 hover:scale-110 transition-all duration-500 group/thumb"
                     >
                       <img
                         src={item.src}
@@ -859,7 +865,7 @@ export default function App() {
                     <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
                     <span className="absolute -inset-1 rounded-full border border-pink-200/20 opacity-0 transition-opacity duration-300 group-hover/btn:opacity-100" />
                     <span className="relative z-10">Yes, I Forgive You</span>
-                    <span className="relative z-10 text-xl">{forgiveResponse === 'yes' ? 'âœ¨ðŸ’–' : 'ðŸ’–'}</span>
+                    <span className="relative z-10 text-xl">{forgiveResponse === 'yes' ? '✨💖' : '💖'}</span>
                   </button>
 
                   <button
@@ -872,7 +878,7 @@ export default function App() {
                   >
                     <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn-alt:translate-y-0 transition-transform duration-300" />
                     <span className="relative z-10">Still Thinking...</span>
-                    {forgiveResponse === 'thinking' && <span className="ml-2 relative z-10 animate-pulse">âŒ›</span>}
+                    {forgiveResponse === 'thinking' && <span className="ml-2 relative z-10 animate-pulse">⌛</span>}
                   </button>
                 </div>
 
@@ -896,16 +902,16 @@ export default function App() {
                       {/* Sparkly decorative floating stars in YES card background */}
                       {forgiveResponse === 'yes' && (
                         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                          <div className="absolute top-4 left-10 text-emerald-400/20 text-2xl animate-pulse">âœ¨</div>
-                          <div className="absolute bottom-6 right-12 text-teal-400/15 text-3xl animate-bounce delay-700">ðŸŒ¸</div>
-                          <div className="absolute top-12 right-20 text-emerald-300/10 text-lg animate-ping">ðŸ’–</div>
+                          <div className="absolute top-4 left-10 text-emerald-400/20 text-2xl animate-pulse">✨</div>
+                          <div className="absolute bottom-6 right-12 text-teal-400/15 text-3xl animate-bounce delay-700">🌸</div>
+                          <div className="absolute top-12 right-20 text-emerald-300/10 text-lg animate-ping">💖</div>
                         </div>
                       )}
 
                         {forgiveResponse === 'yes' ? (
                           <div className="space-y-4 relative z-10">
                             <div className="flex flex-col items-center gap-4">
-                              <div className="h-16 w-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-3xl shadow-[0_0_20px_rgba(16,185,129,0.3)]">ðŸ¥º</div>
+                              <div className="h-16 w-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-3xl shadow-[0_0_20px_rgba(16,185,129,0.3)]">🥺</div>
                               <h4 className="font-cinzel text-2xl font-black text-emerald-300 tracking-[0.2em] uppercase">
                                 My World Finds Its Peace
                               </h4>
@@ -914,12 +920,12 @@ export default function App() {
                               Thank you, Dikshu. Your forgiveness is the most precious gift light has ever touched. I will honor your boundaries and protect your peace with my soul. You are, and always will be, respected above all else.
                             </p>
                             <div className="pt-1.5 flex items-center gap-1 text-xs text-emerald-400 font-mono">
-                              <span>âœ¨ Trust restored & protected forever</span>
+                              <span>✨ Trust restored & protected forever</span>
                             </div>
                           </div>
                         ) : (
                           <div className="space-y-1 relative z-10">
-                            <h4 className="font-serif text-base font-bold text-pink-200">Take all the time you need... âŒ›</h4>
+                            <h4 className="font-serif text-base font-bold text-pink-200">Take all the time you need... ⌛</h4>
                             <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
                               I completely understand. Your comfort, space, and peace are the absolute most important things to me. I will never push you. I will wait at a respectful distance, praying for your happiness and laughing always.
                             </p>
@@ -948,14 +954,14 @@ export default function App() {
         <div className="max-w-6xl mx-auto flex flex-col items-center gap-3">
           <div className="flex items-center gap-1">
             <span className="font-serif font-black tracking-widest text-pink-300 text-sm">FOR DIKSHU</span>
-            <span>ðŸ’–</span>
+            <span>💖</span>
           </div>
           <p className="font-medium text-pink-200/40">
             Made with apology, honesty, respect, and infinite hope.
           </p>
           <div className="flex flex-col items-center gap-1">
             <p className="text-[10px] font-mono text-zinc-600">
-              Â© {new Date().getFullYear()} Omkar. All decisions respected.
+              © {new Date().getFullYear()} Omkar. All decisions respected.
             </p>
             <div className="flex items-center gap-4 mt-1">
               <button
