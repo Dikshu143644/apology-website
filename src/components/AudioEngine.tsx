@@ -38,6 +38,8 @@ export default function AudioEngine() {
   const [isMobile, setIsMobile] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const hasUserControlledAudio = useRef(false);
+  const autoStartAttempted = useRef(false);
 
   useEffect(() => {
     const closePlaylist = () => setShowPlaylist(false);
@@ -46,6 +48,18 @@ export default function AudioEngine() {
     return () => {
       window.removeEventListener('close-music-player', closePlaylist);
     };
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      if (hasUserControlledAudio.current || autoStartAttempted.current) return;
+
+      autoStartAttempted.current = true;
+      setStatus('Starting melody after one minute...');
+      setShouldPlay(true);
+    }, 60000);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -99,7 +113,11 @@ export default function AudioEngine() {
             console.error('Audio playback error:', err);
 
             if (isSubscribed) {
-              setStatus('File not found. Check public/music folder.');
+              setStatus(
+                err.name === 'NotAllowedError'
+                  ? 'Tap play to allow music in this browser.'
+                  : 'File not found. Check public/music folder.'
+              );
               setIsPlaying(false);
               setShouldPlay(false);
             }
@@ -117,10 +135,12 @@ export default function AudioEngine() {
   }, [currentTrackIndex, shouldPlay]);
 
   const togglePlayback = () => {
+    hasUserControlledAudio.current = true;
     setShouldPlay((prev) => !prev);
   };
 
   const handleTrackSelect = (index: number) => {
+    hasUserControlledAudio.current = true;
     setCurrentTrackIndex(index);
     setShouldPlay(true);
   };

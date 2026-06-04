@@ -7,11 +7,15 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        serif: ["var(--font-serif)", "Cinzel", "Georgia", "serif"],
-        sans: ["var(--font-sans)", "Poppins", "system-ui", "sans-serif"],
+        cinzel: ["var(--font-cinzel)", "Cinzel", "serif"],
+        playfair: ["var(--font-playfair)", "Playfair Display", "serif"],
+        montserrat: ["var(--font-montserrat)", "Montserrat", "sans-serif"],
+        poppins: ["var(--font-poppins)", "Poppins", "sans-serif"],
+        cormorant: ["var(--font-cormorant)", "Cormorant Garamond", "serif"],
+        serif: ["var(--font-serif)", "Cinzel", "serif"],
+        sans: ["var(--font-sans)", "Poppins", "sans-serif"],
         mono: ["var(--font-mono)", "JetBrains Mono", "monospace"],
         cursive: ["var(--font-cursive)", "Great Vibes", "cursive"],
-        cormorant: ["var(--font-cormorant)", "Cormorant Garamond", "serif"],
       },
     },
   },

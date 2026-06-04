@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
+import * as crypto from 'crypto';
 import dotenv from 'dotenv';
 import { createServer as createViteServer } from 'vite';
 
@@ -12,23 +13,46 @@ const PORT = Number(process.env.PORT) || 3000;
 
 const RESPONSES_FILE = path.join(process.cwd(), 'responses.json');
 const LOGIN_ATTEMPTS_FILE = path.join(process.cwd(), 'login-attempts.json');
-const SITE_SETTINGS_FILE = path.join(process.cwd(), 'site-settings.json');
-
-// Ensure site-settings.json has an initial value from .env or default fallbacks
-function initSiteSettings() {
-  try {
-    if (!fs.existsSync(SITE_SETTINGS_FILE)) {
-      const defaultSettings = {
-        name: process.env.SITE_LOGIN_NAME || 'Dikshu',
-        code: process.env.SITE_LOGIN_CODE || 'love123'
-      };
-      fs.writeFileSync(SITE_SETTINGS_FILE, JSON.stringify(defaultSettings, null, 2), 'utf-8');
-    }
-  } catch (e) {
-    console.error('Failed to initialize site-settings.json', e);
+const LOGIN_USERS_FILE = path.join(process.cwd(), 'login-users.json');
+const GOOGLE_PHOTOS_URL = process.env.GOOGLE_PHOTOS_URL || 'https://photos.app.goo.gl/tzRAJ8o9uzezd64g8';
+const GOOGLE_PHOTOS_URL_2 = process.env.GOOGLE_PHOTOS_URL_2 || 'https://photos.app.goo.gl/B3Y6wpJCWPKFuPXo6';
+const GOOGLE_PHOTOS_LINKS = [
+  {
+    id: 'album-main',
+    label: 'Memory Album',
+    description: 'Our saved photos',
+    url: GOOGLE_PHOTOS_URL
+  },
+  {
+    id: 'album-extra',
+    label: 'More Memories',
+    description: 'Another shared album',
+    url: GOOGLE_PHOTOS_URL_2
   }
+].filter((album) => album.url);
+
+type IdentifierKind = 'name' | 'email' | 'mobile';
+
+interface LoginUser {
+  id: string;
+  identifier: string;
+  normalizedIdentifier: string;
+  identifierKind: IdentifierKind;
+  passwordHash: string;
+  salt: string;
+  createdAt: string;
+  lastLoginAt: string;
+  loginCount: number;
 }
-initSiteSettings();
+
+interface PublicLoginUser {
+  id: string;
+  identifier: string;
+  identifierKind: IdentifierKind;
+  createdAt: string;
+  lastLoginAt: string;
+  loginCount: number;
+}
 
 // Load responses
 function loadResponses(): any[] {
@@ -56,7 +80,7 @@ function loadLoginAttempts(): any[] {
   try {
     if (fs.existsSync(LOGIN_ATTEMPTS_FILE)) {
       const data = fs.readFileSync(LOGIN_ATTEMPTS_FILE, 'utf-8');
-      return JSON.parse(data || '[]');
+      return sanitizeLoginAttempts(JSON.parse(data || '[]'));
     }
   } catch (e) {
     console.error('Failed to read login-attempts.json. Starting fresh.', e);
@@ -66,37 +90,115 @@ function loadLoginAttempts(): any[] {
 
 function saveLoginAttempts(data: any[]) {
   try {
-    fs.writeFileSync(LOGIN_ATTEMPTS_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    fs.writeFileSync(LOGIN_ATTEMPTS_FILE, JSON.stringify(sanitizeLoginAttempts(data), null, 2), 'utf-8');
   } catch (e) {
     console.error('Failed to write login-attempts.json', e);
   }
 }
 
-// Load site settings
-function loadSiteSettings(): { name: string; code: string } {
+function loadLoginUsers(): LoginUser[] {
   try {
-    if (fs.existsSync(SITE_SETTINGS_FILE)) {
-      const data = fs.readFileSync(SITE_SETTINGS_FILE, 'utf-8');
+    if (fs.existsSync(LOGIN_USERS_FILE)) {
+      const data = fs.readFileSync(LOGIN_USERS_FILE, 'utf-8');
       const parsed = JSON.parse(data);
-      if (parsed && parsed.name && parsed.code) {
-        return parsed;
-      }
+      return Array.isArray(parsed) ? parsed : [];
     }
   } catch (e) {
-    console.error('Failed to read site-settings.json. Reading fallbacks.', e);
+    console.error('Failed to read login-users.json. Starting fresh.', e);
   }
+  return [];
+}
+
+function saveLoginUsers(users: LoginUser[]) {
+  try {
+    fs.writeFileSync(LOGIN_USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('Failed to write login-users.json', e);
+  }
+}
+
+function normalizeMobile(value: string) {
+  return value.replace(/\D/g, '');
+}
+
+function getIdentifierKind(value: string): IdentifierKind {
+  const trimmed = value.trim();
+  const mobile = normalizeMobile(trimmed);
+
+  if (trimmed.includes('@')) {
+    return 'email';
+  }
+
+  if (/^[+\d\s\-()]+$/.test(trimmed) && mobile.length >= 7) {
+    return 'mobile';
+  }
+
+  return 'name';
+}
+
+function normalizeIdentifier(value: string) {
+  const trimmed = value.trim();
+  const kind = getIdentifierKind(trimmed);
+
+  if (kind === 'mobile') {
+    return `mobile:${normalizeMobile(trimmed)}`;
+  }
+
+  if (kind === 'email') {
+    return `email:${trimmed.toLowerCase()}`;
+  }
+
+  return `name:${trimmed.toLowerCase().replace(/\s+/g, ' ')}`;
+}
+
+function hashPassword(password: string, salt: string) {
+  return crypto.pbkdf2Sync(password, salt, 120000, 64, 'sha512').toString('hex');
+}
+
+function createPasswordRecord(password: string) {
+  const salt = crypto.randomBytes(16).toString('hex');
   return {
-    name: process.env.SITE_LOGIN_NAME || 'Dikshu',
-    code: process.env.SITE_LOGIN_CODE || 'love123'
+    salt,
+    passwordHash: hashPassword(password, salt)
   };
 }
 
-function saveSiteSettings(settings: { name: string; code: string }) {
-  try {
-    fs.writeFileSync(SITE_SETTINGS_FILE, JSON.stringify(settings, null, 2), 'utf-8');
-  } catch (e) {
-    console.error('Failed to write site-settings.json', e);
+function verifyPassword(password: string, user: LoginUser) {
+  const expected = Buffer.from(user.passwordHash, 'hex');
+  const actual = Buffer.from(hashPassword(password, user.salt), 'hex');
+
+  if (expected.length !== actual.length) {
+    return false;
   }
+
+  return crypto.timingSafeEqual(expected, actual);
+}
+
+function toPublicLoginUser(user: LoginUser): PublicLoginUser {
+  return {
+    id: user.id,
+    identifier: user.identifier,
+    identifierKind: user.identifierKind,
+    createdAt: user.createdAt,
+    lastLoginAt: user.lastLoginAt,
+    loginCount: user.loginCount
+  };
+}
+
+function maskSecret(secret: string) {
+  if (!secret) {
+    return 'Empty Password';
+  }
+  return `Password hidden (${secret.length} chars)`;
+}
+
+function sanitizeLoginAttempts(attempts: any[]) {
+  return attempts.map((attempt) => ({
+    ...attempt,
+    code: attempt.code && String(attempt.code).startsWith('Password hidden')
+      ? attempt.code
+      : maskSecret(String(attempt.code || ''))
+  }));
 }
 
 // Express JSON body parser
@@ -106,6 +208,15 @@ app.use(express.json());
 const getAdminPasscode = (): string => {
   return process.env.ADMIN_PASSCODE || 'change-this-admin-passcode';
 };
+
+// API: Public non-sensitive site settings
+app.get('/api/settings/public', (_req, res) => {
+  res.json({
+    success: true,
+    googlePhotosUrl: GOOGLE_PHOTOS_URL,
+    googlePhotosLinks: GOOGLE_PHOTOS_LINKS
+  });
+});
 
 // API: Record a forgiveness choice response
 app.post('/api/forgive', (req, res) => {
@@ -137,36 +248,84 @@ app.post('/api/forgive', (req, res) => {
 // API: Login Endpoint for Normal Visitors
 app.post('/api/login', (req, res) => {
   try {
-    const { name, secretCode } = req.body;
-    const settings = loadSiteSettings();
+    const { name, identifier, secretCode } = req.body;
+    const loginIdentifier = String(identifier || name || '').trim();
+    const loginPassword = String(secretCode || '').trim();
+    const normalizedIdentifier = normalizeIdentifier(loginIdentifier);
+    const now = new Date().toISOString();
 
-    const isMatch = 
-      secretCode && 
-      settings.code && 
-      secretCode.trim() === settings.code.trim();
+    if (!loginIdentifier || !loginPassword) {
+      return res.status(400).json({
+        success: false,
+        error: 'Enter a name, Gmail, or mobile and a password.'
+      });
+    }
+
+    if (loginPassword.length < 4) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password must be at least 4 characters.'
+      });
+    }
+
+    const users = loadLoginUsers();
+    const existingUser = users.find((user) => user.normalizedIdentifier === normalizedIdentifier);
+    let success = false;
+    let status: 'created' | 'matched' | 'password_mismatch' = 'password_mismatch';
+    let responseMessage = '';
+
+    if (!existingUser) {
+      const passwordRecord = createPasswordRecord(loginPassword);
+      const newUser: LoginUser = {
+        id: Math.random().toString(36).substring(2, 9),
+        identifier: loginIdentifier,
+        normalizedIdentifier,
+        identifierKind: getIdentifierKind(loginIdentifier),
+        passwordHash: passwordRecord.passwordHash,
+        salt: passwordRecord.salt,
+        createdAt: now,
+        lastLoginAt: now,
+        loginCount: 1
+      };
+
+      users.unshift(newUser);
+      saveLoginUsers(users);
+      success = true;
+      status = 'created';
+      responseMessage = 'Account created and access granted.';
+    } else if (verifyPassword(loginPassword, existingUser)) {
+      existingUser.lastLoginAt = now;
+      existingUser.loginCount += 1;
+      saveLoginUsers(users);
+      success = true;
+      status = 'matched';
+      responseMessage = 'Access granted.';
+    }
 
     // Log the attempt
     const attempts = loadLoginAttempts();
     const newAttempt = {
       id: Math.random().toString(36).substring(2, 9),
-      name: name || 'Empty Name',
-      code: secretCode || 'Empty Code',
-      success: isMatch,
-      timestamp: new Date().toISOString(),
+      name: loginIdentifier || 'Empty Identifier',
+      code: maskSecret(loginPassword),
+      success,
+      status,
+      timestamp: now,
       userAgent: req.headers['user-agent'] || 'Unknown',
       ip: (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'Unknown'
     };
     attempts.unshift(newAttempt);
     saveLoginAttempts(attempts);
 
-    if (isMatch) {
-      return res.json({ success: true });
-    } else {
-      return res.status(401).json({ 
-        success: false, 
-        error: 'Please enter correct name and secret memory code.' 
-      });
+    if (success) {
+      return res.json({ success: true, status, message: responseMessage });
     }
+
+    return res.status(401).json({
+      success: false,
+      status,
+      error: 'This name, Gmail, or mobile already has a saved password. Use the first password created for this account.'
+    });
   } catch (err) {
     console.error('API /api/login error:', err);
     res.status(500).json({ error: 'Internal server error.' });
@@ -188,7 +347,7 @@ app.post('/api/admin/auth', (req, res) => {
   }
 });
 
-// API: Retrieve Dashboard Data (Protected settings, responses, and login attempts)
+// API: Retrieve Dashboard Data (Protected accounts, responses, and login attempts)
 app.get('/api/admin/dashboard', (req, res) => {
   try {
     const passcode = req.headers['x-admin-passcode'] as string;
@@ -197,13 +356,14 @@ app.get('/api/admin/dashboard', (req, res) => {
       return res.status(401).json({ error: 'Unauthorized.' });
     }
 
-    const settings = loadSiteSettings();
+    const loginUsers = loadLoginUsers().map(toPublicLoginUser);
     const responses = loadResponses();
     const loginAttempts = loadLoginAttempts();
 
     res.json({
       success: true,
-      settings,
+      loginMode: 'first-login-registers',
+      loginUsers,
       responses,
       loginAttempts
     });
@@ -222,20 +382,29 @@ app.post('/api/admin/settings/login', (req, res) => {
       return res.status(401).json({ error: 'Unauthorized.' });
     }
 
-    const { name, code } = req.body;
-    if (!name || !name.trim() || !code || !code.trim()) {
-      return res.status(400).json({ error: 'Name and Code are required.' });
-    }
-
-    const newSettings = {
-      name: name.trim(),
-      code: code.trim()
-    };
-    saveSiteSettings(newSettings);
-
-    res.json({ success: true, settings: newSettings });
+    return res.status(410).json({
+      success: false,
+      error: 'Fixed login credentials are disabled. Visitor accounts are created on first login.'
+    });
   } catch (err) {
     console.error('API /api/admin/settings/login error:', err);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+// API: Clear Registered Login Accounts
+app.post('/api/admin/login-users/clear', (req, res) => {
+  try {
+    const passcode = req.headers['x-admin-passcode'] as string;
+    const actualPasscode = getAdminPasscode();
+    if (passcode !== actualPasscode) {
+      return res.status(401).json({ error: 'Unauthorized.' });
+    }
+
+    saveLoginUsers([]);
+    res.json({ success: true, loginUsers: [] });
+  } catch (err) {
+    console.error('API /api/admin/login-users/clear error:', err);
     res.status(500).json({ error: 'Internal server error.' });
   }
 });

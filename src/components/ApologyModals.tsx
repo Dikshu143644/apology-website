@@ -6,10 +6,10 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Heart, Sparkles, AlertCircle } from 'lucide-react';
-import dikshuPortraitClean from '../assets/images/dikshu_portrait_clean_1779319295919.png';
-import regeneratedImage from '../assets/images/regenerated_image_1779710814268.png';
 import messageHeartBg from '../assets/images/A-message-from-my-heart.png';
 import aboutMePhoto from '../assets/images/About-Me.png';
+import listeningMusic from '../assets/images/Dikshu-Listening-Music.png';
+import lookingLeft from '../assets/images/Me-Looking-In-Left-Side.png';
 import MemoryGallery from './MemoryGallery';
 
 interface ModalProps {
@@ -51,13 +51,16 @@ export function BaseModal({ isOpen, onClose, title, children, bgImage }: ModalPr
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="relative w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-[34px] border border-pink-400/25 bg-black/25 p-6 md:p-8 text-white shadow-2xl shadow-pink-500/25 custom-scrollbar z-10 flex flex-col"
+            className="relative overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.06] backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.35)] w-full max-w-4xl max-h-[85vh] text-white custom-scrollbar z-10 flex flex-col"
           >
+            {/* Decorative ambient overlay gradient */}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.08] via-pink-400/[0.04] to-transparent z-0" />
+
             {/* Background image */}
             <div
               className="absolute inset-0 -z-10 bg-cover bg-top opacity-[0.80] md:opacity-[0.85] transition-opacity duration-300"
               style={{
-                backgroundImage: `url('${bgImage || "/images/modal-bg.jpg"}')`,
+                backgroundImage: `url('${bgImage || "/image/memory-8.png"}')`,
               }}
             />
 
@@ -74,18 +77,19 @@ export function BaseModal({ isOpen, onClose, title, children, bgImage }: ModalPr
               className="absolute right-5 top-5 rounded-full border border-pink-300/25 bg-white/10 p-2 text-pink-200 hover:bg-pink-500/20 transition-all z-20 cursor-pointer"
               title="Close"
             >
-              <X className="h-4.5 w-4.5" />
+              <X className="h-[18px] w-[18px]" />
             </button>
 
             {/* Header / Title */}
-            <div className="relative z-10 border-b border-pink-500/10 pb-4 mb-6 text-left">
-              <h2 className="flex items-center gap-2 font-serif text-2xl md:text-3xl font-bold text-pink-100 pr-10">
-                ♡ {title}
+            <div className="relative z-10 border-b border-white/10 p-6 md:px-8 md:py-6 text-left flex items-center justify-between">
+              <h2 className="flex items-center gap-3 font-cinzel text-xl md:text-2xl font-bold text-pink-100 pr-10 tracking-widest uppercase">
+                <Sparkles className="h-5 w-5 text-pink-400 animate-pulse" />
+                {title}
               </h2>
             </div>
 
             {/* Body content with scrolling inside */}
-            <div className="relative z-10 text-pink-55/90 leading-relaxed font-sans text-sm md:text-base space-y-6 overflow-y-auto pr-1">
+            <div className="relative z-10 font-poppins text-white/90 leading-relaxed text-sm md:text-base p-6 md:p-8 overflow-y-auto custom-scrollbar">
               {children}
             </div>
           </motion.div>
@@ -102,28 +106,28 @@ export function PolaroidImageCard({ src, caption, desc }: { src: string; caption
   return (
     <motion.div
       whileHover={{ y: -8, rotate: Math.random() * 2 - 1 }}
-      className="bg-white p-3 pb-5 rounded-sm shadow-xl shadow-black/60 border border-neutral-200/20 text-neutral-800 font-sans max-w-[260px] mx-auto w-full flex flex-col"
+      className="bg-white p-3.5 pb-6 rounded-sm shadow-2xl shadow-black/60 border border-neutral-200/20 text-neutral-800 font-poppins max-w-[280px] mx-auto w-full flex flex-col"
     >
-      <div className="relative aspect-square w-full rounded-xs bg-pink-900/10 overflow-hidden mb-3 border border-neutral-100">
+      <div className="relative aspect-square w-full rounded-xs bg-pink-900/10 overflow-hidden mb-4 border border-neutral-100">
         {!hasError ? (
           <img
             src={src}
             alt={caption}
             referrerPolicy="no-referrer"
             onError={() => setHasError(true)}
-            className="w-full h-full object-cover grayscale-10 hover:grayscale-0 transition-all duration-500"
+            className="w-full h-full object-cover grayscale-[15%] hover:grayscale-0 transition-all duration-700"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-tr from-purple-900/50 via-pink-800/40 to-indigo-900/40 flex flex-col items-center justify-center p-3 text-center text-pink-100 relative">
-            <Sparkles className="h-6 w-6 text-pink-300 mb-1.5 animate-pulse" />
-            <span className="text-[10px] uppercase font-mono tracking-wider opacity-90 leading-tight">Dreamy Memory</span>
+          <div className="w-full h-full bg-gradient-to-tr from-purple-900/50 via-pink-800/40 to-indigo-900/40 flex flex-col items-center justify-center p-4 text-center text-pink-100 relative">
+            <Sparkles className="h-8 w-8 text-pink-300 mb-2 animate-pulse" />
+            <span className="text-xs uppercase font-mono tracking-widest opacity-90 leading-tight">Dreamy Memory</span>
             <div className="absolute inset-0 bg-radial-gradient from-transparent to-pink-950/20 pointer-events-none" />
           </div>
         )}
       </div>
-      <div>
-        <h4 className="font-serif font-bold text-sm tracking-tight text-pink-950 leading-tight mb-1">{caption}</h4>
-        <p className="text-[11px] text-neutral-500/90 leading-normal font-medium">{desc}</p>
+      <div className="px-1">
+        <h4 className="font-cinzel font-bold text-sm tracking-widest text-pink-950 leading-tight mb-2 uppercase">{caption}</h4>
+        <p className="text-[11px] text-neutral-500 leading-relaxed font-medium">{desc}</p>
       </div>
     </motion.div>
   );
@@ -155,10 +159,11 @@ const itemVariants = {
 
 interface ModalsManagerProps {
   activeModal: string | null;
+  galleryInitialTab?: 'photos' | 'videos' | 'google-photos';
   onClose: () => void;
 }
 
-export function ApologyModals({ activeModal, onClose }: ModalsManagerProps) {
+export function ApologyModals({ activeModal, galleryInitialTab = 'photos', onClose }: ModalsManagerProps) {
   return (
     <>
       {/* 1. ABOUT ME MODAL */}
@@ -177,50 +182,85 @@ export function ApologyModals({ activeModal, onClose }: ModalsManagerProps) {
           {/* Who am I card */}
           <motion.div 
             variants={itemVariants}
-            className="rounded-3xl border border-pink-300/15 bg-black/45 p-5 backdrop-blur-md shadow-lg shadow-pink-500/10 space-y-3"
+            className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 sm:p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] space-y-4 font-montserrat"
           >
-            <h4 className="text-pink-300 font-serif text-xl font-bold">Who am I?</h4>
-            <p className="text-pink-100 font-semibold text-base">I’m Omkar.</p>
-            <p>Just an ordinary boy with an extraordinary feeling that stayed in his heart for years.</p>
-            <p>I was never perfect. I made mistakes. Many mistakes. Sometimes too many. Sometimes the kind that hurt the person I never wanted to hurt.</p>
-            <p className="border-l-4 border-pink-500/40 pl-4 py-2 italic bg-pink-500/5 rounded-r-xl text-pink-200">
+            <h4 className="text-white font-bold tracking-wide uppercase text-lg sm:text-xl">Who am I?</h4>
+            <p className="text-pink-200 font-bold text-base">I’m Omkar.</p>
+            <p className="text-white/70">Just an ordinary boy with an extraordinary feeling that stayed in his heart for years.</p>
+            <p className="text-white/70">I was never perfect. I made mistakes. Many mistakes. Sometimes too many. Sometimes the kind that hurt the person I never wanted to hurt.</p>
+            <p className="border-l-4 border-pink-500/40 pl-5 py-3 italic bg-white/[0.02] rounded-r-2xl text-pink-100 leading-relaxed">
               "But behind every mistake, there was never hatred… only a heart that loved too deeply and didn’t know how to handle that love properly."
             </p>
           </motion.div>
 
           {/* How it started card */}
-          <motion.div 
+          <motion.div
             variants={itemVariants}
-            className="rounded-3xl border border-pink-300/15 bg-black/45 p-5 backdrop-blur-md shadow-lg shadow-pink-500/10 space-y-3"
+            className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 sm:p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] font-cormorant"
           >
-            <h4 className="text-pink-300 font-serif text-xl font-bold">How it started</h4>
-            <p>It didn’t begin as love. Back in 5th grade, it was just a small liking. A quiet attraction. A simple childhood feeling.</p>
-            <p>But days became months. Months became years. And without even realizing it, that small feeling grew into something much deeper.</p>
-            <p className="text-pink-300 font-serif italic text-base font-bold">This wasn’t just liking anymore. This was love. Real love. The kind that stays even when life changes.</p>
+            <h4 className="text-white text-3xl font-bold mb-6 tracking-normal">
+              <i>How It Started</i>
+            </h4>
+
+            <div className="max-w-2xl space-y-4 text-xl sm:text-1xl leading-relaxed text-white/80">
+              <p>It didn’t begin as love.</p>
+              <p>Back in 5th grade, it was just a small liking.</p>
+              <p>A quiet attraction.</p>
+              <p>A simple childhood feeling.</p>
+              <p>But days became months.</p>
+              <p>Months became years.</p>
+              <p>And without even realizing it, that small feeling grew into something much deeper.</p>
+              <p>By the time I reached 8th standard, I finally understood:</p>
+            </div>
+
+            <div className="mt-8 space-y-4 pl-6 border-l border-pink-400/30">
+              <p className="text-pink-100 italic text-2xl sm:text-2xl font-medium">
+                This wasn’t just liking anymore.
+              </p>
+              <p className="text-pink-200 italic text-2xl sm:text-2x1 font-medium">
+                This was love.
+              </p>
+              <p className="text-pink-300 italic text-2xl sm:text-2x1 font-medium">
+                Real love.
+              </p>
+              <p className="text-white italic text-2xl sm:text-2x1 font-medium">
+                The kind that stays even when life changes.
+              </p>
+            </div>
           </motion.div>
 
           {/* Why her card */}
           <motion.div 
             variants={itemVariants}
-            className="rounded-3xl border border-pink-300/15 bg-black/45 p-5 backdrop-blur-md shadow-lg shadow-pink-500/10 space-y-3"
+            className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 sm:p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] space-y-5 font-playfair"
           >
-            <h4 className="text-pink-300 font-serif text-xl font-bold">Why her?</h4>
-            <p>People often ask why we love someone. But honestly… I don’t have an exact reason. And maybe true love doesn’t always need one.</p>
-            <p>I didn’t love her because of one smile. Or because of one moment. Or because of one reason.</p>
-            <p className="text-pink-200 font-semibold bg-pink-500/5 p-3 rounded-xl border border-pink-500/10">I loved her because somewhere, slowly, silently… my heart chose her. And once it did, it never looked away.</p>
+            <h4 className="text-white text-2xl sm:text-3xl font-bold tracking-normal">Why her?</h4>
+            <div className="text-white/70 space-y-4 text-base sm:text-lg">
+              <p>People often ask why we love someone. But honestly… I don’t have an exact reason. And maybe true love doesn’t always need one.</p>
+              <p>I didn’t love her because of one smile. Or because of one moment. Or because of one reason.</p>
+            </div>
+            <p className="text-pink-100 font-semibold bg-white/[0.04] p-5 rounded-2xl border border-white/10 italic text-lg shadow-inner">
+              "I loved her because somewhere, slowly, silently… my heart chose her. And once it did, it never looked away."
+            </p>
           </motion.div>
 
           {/* Mistakes card */}
           <motion.div 
             variants={itemVariants}
-            className="rounded-3xl border border-pink-300/15 bg-black/45 p-5 backdrop-blur-md shadow-lg shadow-pink-500/10 space-y-3"
+            className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 sm:p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] space-y-4 font-mono text-xs sm:text-sm"
           >
-            <h4 className="text-pink-300 font-serif text-xl font-bold">My mistakes</h4>
-            <p>Yes. I made many mistakes. Some I understand. Some maybe I still don’t fully understand.</p>
-            <p>Sometimes my feelings became too much. Sometimes I crossed emotional boundaries.</p>
-            <p>Sometimes I wanted her happiness so badly… that I forgot happiness cannot be forced.</p>
-            <p className="text-pink-300 font-medium">And maybe the biggest mistake was wanting to become her happiness instead of simply respecting her peace.</p>
-            <p className="text-pink-100 italic bg-red-500/10 p-3 rounded-xl border border-red-500/20">For that… I am truly sorry.</p>
+            <h4 className="text-white/60 font-bold uppercase tracking-widest text-base mb-2">My mistakes</h4>
+            <div className="text-white/40 space-y-3 tracking-normal">
+              <p>Yes... </p> 
+              <p> I made many mistakes. Some I understand. Some maybe I still don’t fully understand.</p>
+              <p>Sometimes my feelings became too much. Sometimes I crossed emotional boundaries.</p>
+              <p>Sometimes I wanted her happiness so badly… that I forgot happiness cannot be forced.</p>
+              <p className="text-white/80 mt-4 leading-relaxed">And maybe the biggest mistake was wanting to become her happiness instead of simply respecting her peace.</p>
+            </div>
+            <p className="text-pink-300 font-bold flex items-center gap-2 mt-4">
+              <AlertCircle size={14} />
+              For that… I am truly sorry.
+            </p>
           </motion.div>
 
           {/* Lessons card */}
@@ -241,13 +281,21 @@ export function ApologyModals({ activeModal, onClose }: ModalsManagerProps) {
           {/* Request understanding card */}
           <motion.div 
             variants={itemVariants}
-            className="rounded-3xl border border-pink-400/20 bg-pink-500/10 p-5 backdrop-blur-md border border-pink-500/15 shadow-xl shadow-pink-500/5 space-y-3"
+            className="rounded-3xl border border-white/20 bg-pink-500/5 backdrop-blur-sm p-6 sm:p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] space-y-5 font-cormorant shadow-pink-500/5"
           >
-            <h4 className="text-pink-300 font-serif text-xl font-bold">What I want you to understand</h4>
-            <p className="text-xs text-pink-300 uppercase font-mono tracking-wider">I don’t want pity. I don’t want forced love. I don’t want guilt.</p>
-            <p className="font-semibold text-pink-100">I only want you to understand one thing:</p>
-            <p>What I felt was real. Even when I handled it badly. Even when I made mistakes. Even when I failed.</p>
-            <p className="border-l-2 border-pink-400 pl-3 italic text-pink-200 mt-2 text-xs sm:text-sm leading-relaxed">And yes… there were years where loving you silently hurt more than I could explain. But even then… my feelings were never fake.</p>
+            <h4 className="text-white text-3xl font-bold tracking-normal italic">What I want you to understand</h4>
+            <div className="space-y-4">
+              <p className="font-cursive text-2xl sm:text-3xl text-pink-300 leading-tight">
+                "I don’t want pity. I don’t want forced love. I don’t want guilt."
+              </p>
+              <div className="text-white/80 text-xl space-y-3">
+                <p className="font-bold underline decoration-pink-500/30 underline-offset-8">I only want you to understand one thing:</p>
+                <p>What I felt was real. Even when I handled it badly. Even when I made mistakes. Even when I failed.</p>
+                <p className="border-l-2 border-pink-400/40 pl-6 text-pink-100/90 leading-relaxed italic">
+                  And yes… there were years where loving you silently hurt more than I could explain. But even then… my feelings were never fake.
+                </p>
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       </BaseModal>
@@ -271,7 +319,7 @@ export function ApologyModals({ activeModal, onClose }: ModalsManagerProps) {
         isOpen={activeModal === 'learnModal'} 
         onClose={onClose} 
         title="What I Learned"
-        bgImage="/images/promise-bg.jpg"
+        bgImage={listeningMusic}
       >
         <div className="rounded-3xl border border-pink-300/15 bg-black/45 p-5 backdrop-blur-md shadow-lg shadow-pink-500/10 space-y-4 text-left">
           <p className="font-serif text-lg text-pink-300 font-medium">Lessons Bought With Pain...</p>
@@ -289,7 +337,7 @@ export function ApologyModals({ activeModal, onClose }: ModalsManagerProps) {
         isOpen={activeModal === 'matterModal'} 
         onClose={onClose} 
         title="Why You Matter To Me" 
-        bgImage="/images/ChatGPT%20Image%20May%2025,%202026,%2004_39_57%20PM.png"
+        bgImage="src/assets/images/Dikshu-Looking-At-Right-Side.png"
       >
         <motion.div 
           variants={containerVariants}
@@ -300,24 +348,24 @@ export function ApologyModals({ activeModal, onClose }: ModalsManagerProps) {
           {/* Quick highlights block like in screenshot */}
           <motion.div 
             variants={itemVariants}
-            className="rounded-3xl border border-pink-300/15 bg-black/4.5 p-5 backdrop-blur-md shadow-lg shadow-pink-500/10 flex flex-col md:flex-row items-center justify-between gap-6"
+            className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 sm:p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] flex flex-col md:flex-row items-center justify-between gap-8 font-playfair"
           >
-            <div className="space-y-3 flex-1 w-full text-left">
-              <h3 className="font-serif text-2xl font-bold text-pink-200">Why You Matter</h3>
-              <div className="space-y-2 font-medium">
-                <div className="flex items-center gap-3 text-pink-100"><Heart className="h-4 w-4 text-pink-400 fill-pink-500/30 animate-pulse" /> <span>You are highly special to me</span></div>
-                <div className="flex items-center gap-3 text-pink-100"><Heart className="h-4 w-4 text-pink-400 fill-pink-500/30 animate-pulse" /> <span>You changed my path & life</span></div>
-                <div className="flex items-center gap-3 text-pink-100"><Heart className="h-4 w-4 text-pink-400 fill-pink-500/30 animate-pulse animate-delay-100" /> <span>You made me a better person</span></div>
-                <div className="flex items-center gap-3 text-pink-100"><Heart className="h-4 w-4 text-pink-400 fill-pink-500/30 animate-pulse animate-delay-200" /> <span>You hold the kindest heart</span></div>
-                <div className="flex items-center gap-3 text-pink-100"><Heart className="h-4 w-4 text-pink-400 fill-pink-500/30 animate-pulse animate-delay-300" /> <span>You deserve cosmic happiness</span></div>
+            <div className="space-y-6 flex-1 w-full text-left">
+              <h3 className="text-3xl font-bold text-pink-100 tracking-normal">Why You Matter</h3>
+              <div className="space-y-3 font-medium">
+                <div className="flex items-center gap-4 text-white/80"><Heart className="h-5 w-5 text-pink-400 fill-pink-500/30 animate-pulse" /> <span className="text-lg">You are highly special to me</span></div>
+                <div className="flex items-center gap-4 text-white/80"><Heart className="h-5 w-5 text-pink-400 fill-pink-500/30 animate-pulse" /> <span className="text-lg">You changed my path & life</span></div>
+                <div className="flex items-center gap-4 text-white/80"><Heart className="h-5 w-5 text-pink-400 fill-pink-500/30 animate-pulse" /> <span className="text-lg">You made me a better person</span></div>
+                <div className="flex items-center gap-4 text-white/80"><Heart className="h-5 w-5 text-pink-400 fill-pink-500/30 animate-pulse" /> <span className="text-lg">You hold the kindest heart</span></div>
+                <div className="flex items-center gap-4 text-white/80"><Heart className="h-5 w-5 text-pink-400 fill-pink-500/30 animate-pulse" /> <span className="text-lg">You deserve cosmic happiness</span></div>
               </div>
             </div>
 
             {/* Decorative Heart image placeholder block to mimic mockup */}
-            <div className="h-32 w-32 rounded-3xl bg-pink-500/5 border border-pink-500/20 flex flex-col items-center justify-center p-3 relative overflow-hidden group shadow-inner">
-              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-indigo-500/10" />
-              <Heart className="h-12 w-12 text-pink-400 fill-pink-500/30 animate-pulse relative z-10" />
-              <span className="text-[10px] font-mono uppercase tracking-widest text-pink-300/70 mt-1 relative z-10 font-bold">Infinite</span>
+            <div className="h-40 w-40 rounded-[35px] bg-white/[0.02] border border-white/10 flex flex-col items-center justify-center p-4 relative overflow-hidden group shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-blue-500/10 blur-2xl" />
+              <Heart className="h-16 w-16 text-pink-400 fill-pink-500/30 animate-pulse relative z-10" />
+              <span className="text-xs font-mono uppercase tracking-[0.3em] text-pink-300 mt-3 relative z-10 font-bold drop-shadow-md">Infinite</span>
             </div>
           </motion.div>
 
@@ -413,8 +461,8 @@ export function ApologyModals({ activeModal, onClose }: ModalsManagerProps) {
       <BaseModal 
         isOpen={activeModal === 'promiseModal'} 
         onClose={onClose} 
-        title="My Promises To You" 
-        bgImage="/images/promise-bg.jpg"
+        title="I Promise You" 
+        bgImage={listeningMusic}
       >
         <div className="space-y-6 text-left">
           <div className="rounded-3xl border border-pink-300/15 bg-black/45 p-5 backdrop-blur-md shadow-lg shadow-pink-500/10 space-y-2">
@@ -441,14 +489,15 @@ export function ApologyModals({ activeModal, onClose }: ModalsManagerProps) {
             ].map((p) => (
               <div 
                 key={p.num} 
-                className="rounded-3xl border border-pink-300/15 bg-black/45 p-5 backdrop-blur-md shadow-lg shadow-pink-500/10 hover:border-pink-500/30 hover:scale-[1.01] transition-all duration-300 relative overflow-hidden flex gap-3"
+                className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 sm:p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] hover:border-pink-500/30 hover:scale-[1.02] transition-all duration-500 relative overflow-hidden flex gap-5 font-poppins"
               >
-                <span className="font-mono text-pink-400 font-extrabold text-lg flex-shrink-0">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-pink-500/5 blur-2xl rounded-full translate-x-12 -translate-y-12" />
+                <span className="font-mono text-pink-400 font-extrabold text-xl flex-shrink-0 drop-shadow-sm">
                   {p.num.toString().padStart(2, '0')}.
                 </span>
-                <div className="space-y-1">
-                  <h4 className="text-pink-200 font-serif font-black text-sm">{p.t}</h4>
-                  <p className="text-zinc-300 text-xs leading-relaxed">{p.d}</p>
+                <div className="space-y-2 relative z-10">
+                  <h4 className="text-pink-100 font-cinzel font-bold text-sm tracking-widest uppercase">{p.t}</h4>
+                  <p className="text-white/60 text-xs sm:text-sm leading-relaxed">{p.d}</p>
                 </div>
               </div>
             ))}
@@ -463,113 +512,124 @@ export function ApologyModals({ activeModal, onClose }: ModalsManagerProps) {
         title="A Message From My Heart" 
         bgImage={messageHeartBg}
       >
-        <div className="space-y-6 text-left">
+        <div className="space-y-8 text-left font-poppins">
           {/* Section 1: Intro block */}
-          <div className="rounded-3xl border border-pink-300/15 bg-black/45 p-6 backdrop-blur-md shadow-lg shadow-pink-500/10">
-            <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
+          <div className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 md:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+            <div className="flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
               {/* Elegant floating portrait card */}
-              <div className="relative w-40 h-52 rounded-2xl overflow-hidden border border-pink-500/30 shadow-lg shadow-pink-500/15 flex-shrink-0 bg-black/30">
+              <div className="relative w-48 h-64 rounded-3xl overflow-hidden border border-white/20 shadow-2xl flex-shrink-0 bg-white/[0.05] group">
                 <img
                   src={messageHeartBg}
                   alt="Beautiful Dikshu"
-                  className="w-full h-full object-cover select-none pointer-events-none hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover select-none pointer-events-none group-hover:scale-110 transition-transform duration-1000"
                 />
-                <div className="absolute bottom-2 left-2 right-2 py-1.5 rounded-lg border border-pink-500/20 bg-black/70 text-center backdrop-blur-sm">
-                  <span className="font-serif text-[9px] tracking-wider uppercase text-pink-200 font-bold">Always Yours</span>
+                <div className="absolute inset-x-3 bottom-3 py-2 rounded-xl border border-white/10 bg-black/40 text-center backdrop-blur-md">
+                  <span className="font-cinzel text-[10px] tracking-[0.2em] uppercase text-pink-100 font-bold">Always Yours</span>
                 </div>
               </div>
               
-              <div className="space-y-4 flex-1">
-                <p className="font-serif font-bold text-xl text-pink-200">Dear Dikshu,</p>
-                <p className="text-pink-100 font-semibold italic text-base">Please forgive me.</p>
-                <p className="text-zinc-200 text-sm sm:text-base leading-relaxed">I never truly wanted to hurt you, trouble you, or become a reason for your pain. But I know that many times, knowingly or unknowingly, I became exactly that. And for that, I am deeply sorry.</p>
-                <p className="text-zinc-200 text-sm sm:text-base leading-relaxed">I am sorry for hiding things from you. I am sorry for not always being honest in the way I should have been. The truth is, I was always scared. Scared of losing you. Scared that if I told you everything, you would leave. But now I understand that fear is never a reason to hide things from someone you truly care about.</p>
+              <div className="space-y-6 flex-1 pt-2">
+                <p className="font-playfair font-bold text-3xl text-pink-100 italic">Dear Dikshu,</p>
+                <p className="text-pink-300 font-cursive text-3xl">Please forgive me.</p>
+                <p className="text-white/70 text-base sm:text-lg leading-relaxed">I never truly wanted to hurt you, trouble you, or become a reason for your pain. But I know that many times, knowingly or unknowingly, I became exactly that. And for that, I am deeply sorry.</p>
+                <p className="text-white/70 text-base sm:text-lg leading-relaxed">I am sorry for hiding things from you. The truth is, I was always scared. Scared of losing you. But now I understand that fear is never a reason to hide things from someone you truly care about.</p>
               </div>
             </div>
           </div>
 
           {/* Section 2: Origin Story with floating styled boxes */}
-          <div className="rounded-3xl border border-pink-300/15 bg-black/45 p-5 md:p-6 backdrop-blur-md shadow-lg shadow-pink-500/10 space-y-4">
-            <p>When I first started liking you in 5th standard, I didn’t understand what I was feeling. At first, it was just a simple childhood liking. But as days passed, months passed, and years passed, that small feeling became deeper. By the time I reached 8th standard, I understood that what I felt was love.</p>
-            <p>And even now, if someone asks me why I love you, I honestly do not have one perfect reason.</p>
-
-            <div className="relative p-5 rounded-2xl bg-gradient-to-r from-pink-500/10 to-purple-500/5 border border-pink-500/20 font-serif italic text-pink-100 text-sm md:text-base space-y-2">
+          <div className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 md:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] space-y-6 font-cormorant">
+            <p className="text-2xl sm:text-3xl leading-relaxed text-white/80">When I first started liking you in 5th grade, I didn’t understand what I was feeling. As years passed, that small feeling became deeper. By 8th grade, I understood that what I felt was love.</p>
+            
+            <div className="relative p-8 rounded-3xl bg-pink-500/5 border border-white/10 text-white/90 text-2xl sm:text-3xl space-y-3 shadow-inner text-center md:text-left italic">
               <p>I don’t love you because of one smile.</p>
               <p>I don’t love you because of one memory.</p>
               <p>I don’t love you because of one special moment.</p>
-              <p className="mt-2 text-pink-300 font-black text-base not-italic">I love you because somewhere, slowly and silently, my heart chose you.</p>
-              <p className="font-bold text-pink-400 not-italic">And once it did, it never looked away.</p>
+              <div className="mt-6 pt-6 border-t border-white/10">
+                <p className="text-pink-200 font-bold not-italic tracking-normal">I love you because somewhere, slowly and silently, my heart chose you.</p>
+                <p className="text-pink-400 font-bold not-italic">And once it did, it never looked away.</p>
+              </div>
             </div>
           </div>
 
           {/* Section 3: After confession impact */}
-          <div className="rounded-3xl border border-pink-300/15 bg-black/45 p-5 md:p-6 backdrop-blur-md shadow-lg shadow-pink-500/10 space-y-4">
-            <p>After I confessed my feelings, I know things changed. I know from that moment until now, I caused you stress, pain, confusion, and emotional pressure. I know I became difficult to handle. I know there were times when I became too pushy because all I wanted was for you to understand me.</p>
-            <p className="font-semibold text-pink-300 bg-pink-500/5 p-4 rounded-xl border border-pink-500/15">But now I understand something important: My intentions do not erase your pain.</p>
+          <div className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 md:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] space-y-4 font-poppins">
+            <p className="text-white/70 text-base sm:text-lg">After I confessed my feelings, I know things changed. I know I became difficult. I know there were times when I became too pushy because all I wanted was for you to understand me.</p>
+            <p className="font-bold text-pink-300 bg-white/[0.04] p-6 rounded-2xl border border-white/10 text-lg sm:text-xl shadow-inner text-center">
+              "But now I understand something important: My intentions do not erase your pain."
+            </p>
           </div>
 
           {/* Section 4: Responsibility & Memory board */}
-          <div className="rounded-3xl border border-pink-300/15 bg-black/45 p-5 md:p-6 backdrop-blur-md shadow-lg shadow-pink-500/10 space-y-4">
-            <div className="bg-pink-955/20 p-5 border border-pink-500/15 rounded-2xl">
-              <p className="font-semibold text-pink-300 text-xs uppercase font-mono tracking-wide mb-1.5">Taking Responsibility</p>
-              <p className="text-zinc-300 text-sm">Even if I never meant to hurt you... if I still hurt you... then I must accept responsibility.</p>
-              <p className="text-pink-100 font-bold mt-2 text-lg">I am sorry.</p>
+          <div className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 md:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] space-y-6 font-mono text-sm">
+            <div className="bg-pink-500/5 p-6 border border-white/10 rounded-2xl shadow-inner">
+              <p className="font-bold text-pink-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                <AlertCircle size={16} />
+                System Responsibility: ACTIVE
+              </p>
+              <p className="text-white/60">Even if I never meant to hurt you... if I still hurt you... then I must accept responsibility.</p>
+              <p className="text-pink-100 font-bold mt-4 text-2xl tracking-normal">I am sorry.</p>
             </div>
 
-            <p>You were one of the reasons I started taking life seriously. You made me think about becoming better, about taking care of myself, and about growing.</p>
-            <p>Even when things were difficult between us, there were still moments where you showed care, understanding, or patience—and I never forgot those moments.</p>
+            <div className="space-y-4 font-poppins text-white/70 text-base sm:text-lg">
+              <p>You were one of the reasons I started taking life seriously. You made me think about becoming better.</p>
+              <p>Even when things were difficult, there were still moments where you showed care—and I never forgot those moments.</p>
 
-            <ul className="grid grid-cols-2 gap-3 text-xs md:text-sm font-mono text-pink-200 bg-pink-500/5 p-4 rounded-2xl border border-pink-500/10">
-              <li className="flex items-center gap-1.5">✨ The times we talked</li>
-              <li className="flex items-center gap-1.5">✨ The memories we made</li>
-              <li className="flex items-center gap-1.5">✨ The playful teasing</li>
-              <li className="flex items-center gap-1.5">✨ The silly conversations</li>
-              <li className="flex items-center gap-1.5" style={{ gridColumn: 'span 2' }}>✨ The childhood memories</li>
-            </ul>
-          </div>
-
-          {/* Section 5: Sorry points list */}
-          <div className="rounded-3xl border border-pink-300/15 bg-black/45 p-5 md:p-6 backdrop-blur-md shadow-lg shadow-pink-500/10 space-y-4">
-            <p className="font-semibold text-pink-250">And whether life brings us close or separate, those moments remain etched deeply.</p>
-            <p className="font-semibold text-pink-200">But I also understand now that your boundaries matter. Your comfort matters. Your peace matters. And I should have respected that better.</p>
-            
-            <p>I am also sorry for every time my feelings became emotional pressure instead of peaceful love.</p>
-            <div className="space-y-2 pl-2 text-zinc-300 text-sm font-medium">
-              <p>• Sorry for being too intense.</p>
-              <p>• Sorry for making you uncomfortable.</p>
-              <p>• Sorry for making you feel trapped.</p>
-              <p>• Sorry for not understanding your feelings properly.</p>
-              <p>• Sorry for thinking only from my pain instead of your perspective.</p>
+              <div className="grid grid-cols-2 gap-4 text-xs sm:text-sm font-mono text-pink-200 bg-white/[0.02] p-6 rounded-2xl border border-white/5">
+                <div className="flex items-center gap-3">
+                  <div className="h-1.5 w-1.5 rounded-full bg-pink-500 animate-pulse" />
+                  <span>The times we talked</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-1.5 w-1.5 rounded-full bg-pink-500 animate-pulse" />
+                  <span>The memories we made</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-1.5 w-1.5 rounded-full bg-pink-500 animate-pulse" />
+                  <span>The playful teasing</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-1.5 w-1.5 rounded-full bg-pink-500 animate-pulse" />
+                  <span>The silly conversations</span>
+                </div>
+                <div className="flex items-center gap-3 col-span-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-pink-500 animate-pulse" />
+                  <span>The childhood memories we hold</span>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Section 6: Real feelings affirmation */}
-          <div className="rounded-3xl border border-pink-300/15 bg-black/45 p-5 md:p-6 backdrop-blur-md shadow-lg shadow-pink-500/10 space-y-5">
-            <div className="bg-pink-500/5 p-5 rounded-2xl border border-pink-500/15 text-center font-mono">
-              <p className="text-xs uppercase tracking-wider text-pink-400 mb-1.5">My Feelings Were Real</p>
-              <div className="flex justify-center gap-4 text-xs sm:text-sm font-serif text-pink-200">
-                <span>Messy? <strong>Yes.</strong></span>
-                <span>Imperfect? <strong>Yes.</strong></span>
-                <span>Painful? <strong>Yes.</strong></span>
-                <span>But fake? <strong className="text-pink-300 font-bold">Never.</strong></span>
+          <div className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 md:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] space-y-8">
+            <div className="bg-white/[0.02] p-8 rounded-3xl border border-white/5 text-center font-mono">
+              <p className="text-xs uppercase tracking-[0.4em] text-pink-400 mb-6 drop-shadow-md">My Feelings Were Real</p>
+              <div className="flex flex-wrap justify-center gap-8 text-lg sm:text-2xl font-cinzel text-white/50">
+                <span className="flex items-center gap-2">Messy? <strong className="text-pink-100">Yes.</strong></span>
+                <span className="flex items-center gap-2">Imperfect? <strong className="text-pink-100">Yes.</strong></span>
+                <span className="flex items-center gap-2">Painful? <strong className="text-pink-100">Yes.</strong></span>
+                <span className="flex items-center gap-2">But fake? <strong className="text-pink-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]">Never.</strong></span>
               </div>
             </div>
 
-            <p>Still… I understand that real love cannot be forced. Real love cannot demand acceptance. Real love cannot ignore someone’s freedom. That is something I am still learning.</p>
-            <p>If life ever gives us a new beginning, I want it to be different: built on honesty, built on patience, built on trust, built on respect.</p>
-            <p className="text-pink-200 font-semibold">I want to become someone who brings peace into your life, not pain. Someone who listens. Someone who understands. Someone who respects your feelings.</p>
-            <p>And if you still need time, distance, or a different answer… I will respect that too. Because your happiness matters, your peace matters, and your choice matters.</p>
-            <p>I am not writing this letter to pressure you. I am writing this because my heart needed to say sorry properly.</p>
+            <div className="space-y-6 text-white/70 text-base sm:text-lg leading-relaxed font-poppins">
+              <p>Still… I understand that real love cannot be forced. That is something I am still learning.</p>
+              <p className="text-white font-semibold">I want to become someone who brings peace into your life, not pain. Someone who respects your feelings.</p>
+              
+              <div className="p-8 border-t border-white/10 space-y-6">
+                <p className="font-playfair italic text-pink-200 font-bold text-center text-2xl sm:text-3xl leading-tight">
+                  "Dikshu… I loved you in the only way I knew how. Maybe imperfectly. Maybe wrongly at times. But never falsely."
+                </p>
+                <div className="flex flex-col items-center gap-4 pt-4">
+                  <div className="w-12 h-[1px] bg-white/20" />
+                  <p className="text-center text-white/40 text-sm italic">And whether life brings us together or keeps us apart… I genuinely hope your life becomes beautiful, peaceful, and full of happiness.</p>
+                </div>
+              </div>
 
-            <p className="border-t border-pink-500/10 pt-6 font-serif italic text-pink-300 font-bold text-center text-base sm:text-lg leading-relaxed">
-              "Dikshu… I loved you in the only way I knew how. Maybe imperfectly. Maybe wrongly at times. But never falsely."
-            </p>
-            <p className="text-center text-zinc-300 text-sm">And I hope one day you understand that. I hope one day you can forgive me.</p>
-            <p className="text-center text-pink-200 text-sm">And whether life brings us together or keeps us apart… I genuinely hope your life becomes beautiful, peaceful, and full of happiness.</p>
-
-            <div className="pt-6 border-t border-pink-500/10 flex flex-col items-end">
-              <span className="text-xs text-zinc-400">With honesty,</span>
-              <span className="font-serif font-black text-pink-300 text-lg md:text-xl font-bold">Omkar</span>
+              <div className="flex flex-col items-end gap-1 pt-8">
+                <span className="text-xs font-mono uppercase tracking-widest text-white/30">With honesty,</span>
+                <span className="font-cursive text-4xl text-pink-300">Omkar</span>
+              </div>
             </div>
           </div>
         </div>
@@ -580,9 +640,9 @@ export function ApologyModals({ activeModal, onClose }: ModalsManagerProps) {
         isOpen={activeModal === 'galleryModal'} 
         onClose={onClose} 
         title="Full Memory Gallery" 
-        bgImage="/images/modal-bg.jpg"
+        bgImage={lookingLeft}
       >
-        <MemoryGallery />
+        <MemoryGallery initialTab={galleryInitialTab} />
       </BaseModal>
     </>
   );

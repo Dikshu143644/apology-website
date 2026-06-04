@@ -47,7 +47,8 @@ function ButterflyScene({
   progress,
   setProgress,
   trail,
-  setTrail
+  setTrail,
+  triggerFlight
 }: {
   isFlying: boolean;
   setIsFlying: (val: boolean) => void;
@@ -57,6 +58,7 @@ function ButterflyScene({
   setProgress: React.Dispatch<React.SetStateAction<number>>;
   trail: SparkleParticle[];
   setTrail: React.Dispatch<React.SetStateAction<SparkleParticle[]>>;
+  triggerFlight: () => void;
 }) {
   const { viewport } = useThree();
   const butterflyRef = useRef<THREE.Group>(null);
@@ -96,12 +98,6 @@ function ButterflyScene({
 
     return { curve: new THREE.QuadraticBezierCurve3(start, control, end), start, end };
   }, [viewport, isDesktop]);
-
-  const triggerFlight = () => {
-    if (isFlying || hasLanded) return;
-    setIsFlying(true);
-    playChimeSound();
-  };
 
   useFrame((state, delta) => {
     const time = state.clock.getElapsedTime();
@@ -198,8 +194,8 @@ function ButterflyScene({
         </mesh>
         {!isFlying && !hasLanded && (
           <Html position={[0, 0.6, 0]} center>
-            <div className="px-3 py-1.5 rounded-full bg-pink-950/90 border border-pink-500/35 text-[10px] sm:text-xs font-mono font-bold tracking-widest text-pink-200 animate-pulse whitespace-nowrap shadow-xl cursor-pointer select-none">
-              Double Click Me {'\ud83e\udd8b'}
+            <div className="pointer-events-none px-3 py-1.5 rounded-full bg-pink-950/90 border border-pink-500/35 text-[10px] sm:text-xs font-mono font-bold tracking-widest text-pink-200 animate-pulse whitespace-nowrap shadow-xl select-none">
+              Tap Me {'\ud83e\udd8b'}
             </div>
           </Html>
         )}
@@ -258,6 +254,20 @@ export default function MagicalButterfly() {
   const [trail, setTrail] = useState<SparkleParticle[]>([]);
   const [showFullPageBurst, setShowFullPageBurst] = useState(false);
   const [pageBurstParticles, setPageBurstParticles] = useState<FullPageSparkle[]>([]);
+  const flightRequestedRef = useRef(false);
+
+  const triggerFlight = () => {
+    if (isFlying || hasLanded || flightRequestedRef.current) return;
+    flightRequestedRef.current = true;
+    setIsFlying(true);
+    playChimeSound();
+  };
+
+  useEffect(() => {
+    if (!isFlying && !hasLanded) {
+      flightRequestedRef.current = false;
+    }
+  }, [isFlying, hasLanded]);
 
   useEffect(() => {
     if (isFlying) {
@@ -316,10 +326,11 @@ export default function MagicalButterfly() {
     setHasLanded(false);
     setProgress(0);
     setTrail([]);
+    flightRequestedRef.current = false;
   };
 
   return (
-    <div className="absolute inset-0 w-full h-full pointer-events-none select-none z-30">
+    <div className="absolute inset-0 w-full h-full pointer-events-none select-none z-20">
 
       {/* Full-Page Magical Stardust Symphony Overlay */}
       <AnimatePresence>
@@ -399,7 +410,28 @@ export default function MagicalButterfly() {
         )}
       </AnimatePresence>
 
-      <Canvas camera={{ position: [0, 0, 4.2], fov: 48 }} gl={{ antialias: true, alpha: true }} className="w-full h-full pointer-events-auto">
+      {!isFlying && !hasLanded && (
+        <button
+          type="button"
+          aria-label="Launch butterfly animation"
+          title="Tap to launch butterfly"
+          onPointerDown={(e) => {
+            e.preventDefault();
+            triggerFlight();
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              triggerFlight();
+            }
+          }}
+          className="absolute left-0 top-[36%] z-[70] h-[44vh] min-h-[220px] max-h-[380px] w-[220px] -translate-y-1/2 cursor-pointer rounded-[32px] border border-pink-300/0 bg-transparent outline-none pointer-events-auto hover:bg-pink-500/[0.025] focus-visible:border-pink-300/50 focus-visible:bg-pink-500/10 focus-visible:ring-2 focus-visible:ring-pink-300/35 sm:top-[38%] sm:w-[260px] md:left-4 lg:left-0"
+        >
+          <span className="sr-only">Launch butterfly animation</span>
+        </button>
+      )}
+
+      <Canvas camera={{ position: [0, 0, 4.2], fov: 48 }} gl={{ antialias: true, alpha: true }} className="w-full h-full pointer-events-none">
         <ambientLight intensity={0.9} />
         <pointLight position={[5, 5, 5]} intensity={1} color="#ffd4e6" />
         <React.Suspense fallback={null}>
@@ -412,6 +444,7 @@ export default function MagicalButterfly() {
             setProgress={setProgress}
             trail={trail}
             setTrail={setTrail}
+            triggerFlight={triggerFlight}
           />
         </React.Suspense>
       </Canvas>

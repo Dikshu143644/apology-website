@@ -32,10 +32,13 @@ import HeartPetals from './components/HeartPetals';
 import NavEmojiBurst from './components/NavEmojiBurst';
 import { ApologyModals } from './components/ApologyModals';
 import AdminPanel from './components/AdminPanel';
-import dikshuPortraitClean from './assets/images/dikshu_portrait_clean_1779319295919.png';
-import regeneratedImage from './assets/images/regenerated_image_1779710814268.png';
+import dikshuBg from './assets/images/Dikshu-bg.png';
 import messageHeartBg from './assets/images/A-message-from-my-heart.png';
 import aboutMePhoto from './assets/images/About-Me.png';
+import listeningMusic from './assets/images/Dikshu-Listening-Music.png';
+import lookingLeft from './assets/images/Me-Looking-In-Left-Side.png';
+import lookingRight from './assets/images/Dikshu-Looking-At-Right-Side.png';
+import iLoveYouDikshu from './assets/images/I-Love-You-Dikshu.png';
 import LoginPage from './components/LoginPage';
 import MagicalBellJar3D from './components/MagicalBellJar3D';
 import MagicalButterfly from './components/MagicalButterfly';
@@ -52,11 +55,20 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [celebrationActive, setCelebrationActive] = useState(false);
+  const [galleryInitialTab, setGalleryInitialTab] = useState<'photos' | 'videos' | 'google-photos'>('photos');
+  const momentFrameImages = [
+    { src: '/image/memory-1.png', pos: '50% 34%' },
+    { src: '/image/memory-2.png', pos: '50% 30%' },
+    { src: '/image/memory-3.png', pos: '50% 31%' },
+    { src: '/image/memory-4.png', pos: '50% 38%' },
+    { src: '/image/memory-11.jpg', pos: '50% 50%' },
+    { src: '/image/memory-12.jpg', pos: '48% 34%' },
+  ];
 
-  const handleLogin = (name: string, code: string) => {
+  const handleLogin = (name: string) => {
     localStorage.setItem('dikshu_authenticated', 'true');
     localStorage.setItem('dikshu_visitor_name', name);
-    localStorage.setItem('dikshu_visitor_code', code);
+    localStorage.removeItem('dikshu_visitor_code');
     setIsAuthenticated(true);
   };
 
@@ -148,16 +160,16 @@ export default function App() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#07020d] text-white font-sans overflow-x-hidden selection:bg-pink-500/30 selection:text-pink-200">
+    <div className="relative min-h-screen bg-[#030108] text-white font-sans overflow-x-hidden selection:bg-pink-500/40 selection:text-white">
       
       {/* Background ambient light effects & real background image */}
       <div 
-        className="fixed inset-[-10px] bg-cover bg-center bg-no-repeat pointer-events-none z-0 select-none blur-[1px] saturate-[1.15] brightness-[0.65] scale-[1.03] transition-all duration-1000"
+        className="fixed inset-[-10px] bg-cover bg-center bg-no-repeat pointer-events-none z-0 select-none blur-[0.5px] saturate-[1.1] brightness-[0.8] scale-[1.03] transition-all duration-1000"
         style={{
-          backgroundImage: `linear-gradient(to bottom, rgba(8, 3, 13, 0.15), rgba(8, 3, 13, 0.45)), url(${dikshuPortraitClean})`,
+          backgroundImage: `linear-gradient(to bottom, rgba(3, 1, 8, 0.2), rgba(3, 1, 8, 0.5)), url(${dikshuBg})`,
         }}
       />
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_20%_25%,rgba(236,72,153,0.15),transparent_40%),radial-gradient(circle_at_80%_75%,rgba(168,85,247,0.12),transparent_45%),radial-gradient(circle_at_50%_50%,rgba(244,63,94,0.06),transparent_50%)] pointer-events-none z-0" />
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_15%_15%,rgba(236,72,153,0.12),transparent_45%),radial-gradient(circle_at_85%_85%,rgba(168,85,247,0.1),transparent_50%),radial-gradient(circle_at_50%_50%,rgba(244,63,94,0.05),transparent_60%)] pointer-events-none z-0" />
 
       {/* Interactive Floating butterflies Canvas & Heart Blossom systems */}
       <ButterflyCanvas />
@@ -165,41 +177,44 @@ export default function App() {
       <NavEmojiBurst />
 
       {/* HEADER / NAVIGATION BAR */}
-      <header className="fixed top-4 left-1/2 -translate-x-1/2 w-[92%] max-w-6xl z-40">
-        <nav className="flex items-center justify-between px-6 py-3.5 rounded-full border border-pink-500/20 bg-[#12071c]/60 backdrop-blur-xl shadow-lg shadow-black/40">
+      <header className="fixed top-4 left-1/2 -translate-x-1/2 w-[94%] max-w-6xl z-50">
+        <nav className="relative overflow-hidden rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.35)] px-6 py-3 flex items-center justify-between">
+          {/* Ambient inner glow for nav */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-pink-500/[0.05] via-transparent to-purple-500/[0.05]" />
+          
           {/* Logo */}
-          <div className="flex items-center gap-1.5 cursor-pointer" onClick={() => handleLinkClick('#home')}>
-            <span className="font-serif font-black tracking-widest text-[#ffd7ed] text-lg sm:text-xl md:text-2xl hover:text-pink-300 transition-colors">
-              OMKAR <span className="text-pink-500 font-sans">💖</span>
+          <div className="relative z-10 flex items-center gap-1.5 cursor-pointer group" onClick={() => handleLinkClick('#home')}>
+            <span className="font-cinzel text-lg sm:text-xl md:text-2xl font-black tracking-[0.2em] text-white group-hover:text-pink-300 transition-all duration-300">
+              OMKAR <span className="text-pink-500 animate-pulse">💖</span>
             </span>
           </div>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden lg:flex items-center gap-6">
+          <div className="relative z-10 hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
               <button
                 key={link.label}
                 onClick={() => handleLinkClick(link.href)}
-                className="text-[13px] font-medium text-pink-200/70 hover:text-pink-300 transition-all duration-200 cursor-pointer relative py-1 group"
+                className="text-[11px] font-bold uppercase tracking-[0.15em] text-pink-100/60 hover:text-pink-200 transition-all duration-300 cursor-pointer relative py-1 group font-poppins"
               >
                 {link.label}
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-pink-400 rounded-full group-hover:w-full transition-all duration-300" />
+                <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-gradient-to-r from-pink-400 to-purple-400 group-hover:w-full transition-all duration-500" />
               </button>
             ))}
           </div>
 
           {/* Right Action Controllers */}
-          <div className="flex items-center gap-3">
+          <div className="relative z-10 flex items-center gap-4">
             {/* Romantic Synth Engine Controller */}
             <AudioEngine />
 
             {/* "For You 💖" button */}
             <button
               onClick={() => setActiveModal('messageModal')}
-              className="hidden sm:flex items-center gap-1.5 px-4 py-2 border border-pink-500/30 rounded-full bg-gradient-to-r from-pink-500/20 via-purple-600/20 to-pink-500/20 text-pink-200 text-xs font-semibold hover:border-pink-400 hover:text-white hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95 duration-300 cursor-pointer"
+              className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/5 text-pink-200 text-[10px] font-bold uppercase tracking-widest hover:border-pink-500/40 hover:bg-pink-500/10 hover:shadow-[0_0_15px_rgba(236,72,153,0.2)] transition-all active:scale-95 duration-300 cursor-pointer group"
             >
               <span>For You</span>
-              <Heart className="h-3.5 w-3.5 text-pink-500 fill-pink-500/30 animate-pulse" />
+              <Heart className="h-3 w-3 text-pink-500 fill-pink-500/30 group-hover:fill-pink-500 transition-all animate-pulse" />
             </button>
 
             {/* Mobile menu trigger */}
@@ -222,23 +237,24 @@ export default function App() {
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="absolute top-[4.5rem] left-0 right-0 p-5 rounded-3xl border border-pink-500/20 bg-[#160a22]/95 backdrop-blur-xl shadow-2xl flex flex-col gap-4 z-50 text-center"
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              className="absolute top-[4.5rem] left-0 right-0 p-6 rounded-[30px] border border-white/10 bg-black/80 backdrop-blur-2xl shadow-2xl flex flex-col gap-5 z-50 text-center overflow-hidden"
             >
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.05] via-pink-400/[0.02] to-transparent" />
               {navLinks.map((link) => (
                 <button
                   key={link.label}
                   onClick={() => handleLinkClick(link.href)}
-                  className="py-1.5 text-sm font-semibold text-pink-100 hover:text-pink-400 border-b border-white/5"
+                  className="relative z-10 py-1 text-xs font-bold uppercase tracking-widest text-pink-100/70 hover:text-pink-300 transition-colors border-b border-white/5 font-poppins"
                 >
                   {link.label}
                 </button>
               ))}
               <button
                 onClick={() => { setMobileMenuOpen(false); setActiveModal('messageModal'); }}
-                className="w-full mt-2 py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-full text-xs shadow-md shadow-pink-500/20"
+                className="relative z-10 w-full mt-2 py-3 px-6 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-black uppercase tracking-[0.2em] rounded-full text-[10px] shadow-[0_8px_20px_rgba(236,72,153,0.3)] active:scale-95 transition-all"
               >
                 Read Heart Message 💌
               </button>
@@ -250,111 +266,115 @@ export default function App() {
       {/* HERO SECTION */}
       <section id="home" className="min-h-screen flex items-center justify-center pt-24 pb-12 px-6 sm:px-12 relative z-10">
         <MagicalButterfly />
-        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div className="relative z-10 w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Hero Content Left */}
           <div className="lg:col-span-7 text-left space-y-6">
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-pink-500/20 bg-pink-500/5 text-pink-300 text-xs font-semibold uppercase tracking-wider">
-              <Sparkles className="h-3.5 w-3.5 animate-bounce" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 text-pink-300 text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] shadow-[0_4px_12px_rgba(0,0,0,0.2)]">
+              <Sparkles className="h-3.5 w-3.5 text-pink-400 animate-pulse" />
               <span>To The Most Special Person</span>
             </div>
             
-            <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-none tracking-tight glow-pink-sm">
-              Dikshu,<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-300 to-purple-400">
+            <h1 className="font-cinzel text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold text-white leading-[0.95] tracking-normal drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)]">
+              DIKSHU,<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-300 to-purple-400 font-playfair italic font-medium tracking-normal">
                 I'm Sorry...
               </span>
-              <span className="inline-block animate-pulse ml-2 text-pink-500">💔</span>
+              <span className="inline-block animate-bounce ml-4 text-pink-500">💔</span>
             </h1>
 
-            <p className="text-zinc-300 font-sans text-base sm:text-lg md:text-xl font-normal leading-relaxed max-w-2xl">
-              For everything. For every mistake. For every moment I failed to understand you. I was wrong in so many ways. But my love for you was never wrong. This website is a quiet harbor for the words I couldn't express.
+            <p className="text-zinc-400 font-poppins text-base sm:text-lg md:text-xl font-light leading-relaxed max-w-2xl">
+              For every mistake. For every moment I failed to understand you. This space is a dedicated dreamscape for the words I couldn't express.
             </p>
 
-            <div className="flex flex-wrap items-center gap-4 pt-4">
-              <button
+            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 sm:gap-4 pt-4">
+              <motion.button
+                type="button"
                 onClick={() => setActiveModal('messageModal')}
-                className="px-7 py-3.5 bg-gradient-to-r from-pink-500 via-fuchsia-600 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold rounded-full text-base tracking-wide flex items-center gap-2 shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer duration-200"
+                whileHover={{ y: -3, scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                className="group/primary relative inline-flex min-h-[52px] w-full sm:w-auto items-center justify-center gap-3 overflow-hidden rounded-full border border-pink-200/25 bg-[linear-gradient(135deg,rgba(236,72,153,0.96),rgba(168,85,247,0.92))] px-7 py-3.5 text-[11px] font-black uppercase tracking-[0.18em] text-white shadow-[0_16px_34px_rgba(168,85,247,0.28)] transition-colors duration-300 hover:border-pink-100/45 cursor-pointer"
               >
-                <span>Read My Heart</span>
-                <span>💌</span>
-              </button>
+                <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.32),transparent_32%)] opacity-75" />
+                <span className="pointer-events-none absolute inset-y-0 -left-16 w-14 rotate-12 bg-white/25 blur-md transition-transform duration-700 group-hover/primary:translate-x-[260px]" />
+                <motion.span
+                  animate={{ scale: [1, 1.08, 1] }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                  className="relative flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/15"
+                >
+                  <Heart className="h-4 w-4 fill-white/75 text-white" />
+                </motion.span>
+                <span className="relative">Read My Heart</span>
+              </motion.button>
               
-              <button
+              <motion.button
+                type="button"
                 onClick={() => handleLinkClick('#about')}
-                className="px-6 py-3.5 border border-pink-500/20 hover:border-pink-500/40 bg-white/5 hover:bg-pink-500/10 text-pink-300 font-semibold rounded-full text-base tracking-wide flex items-center gap-1 hover:-translate-y-1 transition-all duration-200 cursor-pointer"
+                whileHover={{ y: -3, scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                className="group/secondary relative inline-flex min-h-[52px] w-full sm:w-auto items-center justify-center gap-3 overflow-hidden rounded-full border border-white/15 bg-white/[0.055] px-7 py-3.5 text-[11px] font-black uppercase tracking-[0.18em] text-pink-100/90 shadow-[0_12px_28px_rgba(0,0,0,0.24)] backdrop-blur-[10px] transition-colors duration-300 hover:border-pink-300/35 hover:bg-pink-500/[0.08] cursor-pointer"
               >
-                <span>Explore Memories</span>
-                <ChevronRight className="h-4 w-4" />
-              </button>
+                <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/[0.08] via-transparent to-pink-400/[0.08] opacity-70" />
+                <span className="relative">Explore Memories</span>
+                <span className="relative flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] transition-colors duration-300 group-hover/secondary:border-pink-300/30 group-hover/secondary:bg-pink-400/10">
+                  <ChevronRight className="h-4 w-4 text-pink-300 transition-transform duration-300 group-hover/secondary:translate-x-0.5" />
+                </span>
+              </motion.button>
             </div>
 
             {/* Scroll Down Indicator */}
             <div className="pt-8 flex flex-col items-start gap-1 text-pink-200/50 animate-bounce text-xs font-mono uppercase tracking-widest">
               <span>Scroll Down</span>
-              <ArrowDown className="h-4.5 w-4.5 text-pink-400 self-center" />
+              <ArrowDown className="h-[18px] w-[18px] text-pink-400 self-center" />
             </div>
           </div>
 
           {/* Hero Portrait Right */}
           <div className="lg:col-span-5 flex justify-center">
-            <div className="relative w-full max-w-[360px] md:max-w-[400px] aspect-[4/5] rounded-[42px] border border-pink-500/20 overflow-hidden shadow-2xl shadow-purple-950/40 bg-[#160a22]/40 backdrop-blur-lg flex items-center justify-center p-3">
+            <div className="relative w-full max-w-[360px] md:max-w-[420px] aspect-[4/5] rounded-[48px] border border-white/10 bg-white/[0.03] backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-4 overflow-hidden group">
               
-              {/* Back glowing aura boundary */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-pink-500/5 to-pink-500/20 pointer-events-none" />
-
-              {/* Pulsing visual neon ring overlay */}
-              <div className="absolute inset-4 rounded-[36px] border border-dashed border-pink-500/40 animate-[spin_120s_linear_infinite]" />
-              <div className="absolute inset-6 rounded-[34px] border border-pink-500/10 animate-[pulse_4s_ease-in-out_infinite]" />
+              {/* Ambient decoration */}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.08] via-pink-400/[0.02] to-transparent" />
+              <div className="absolute -right-20 -top-20 w-64 h-64 bg-pink-500/10 rounded-full blur-[80px] pointer-events-none" />
 
               {/* Glowing Orb Ring back splash */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-[85%] h-[85%] rounded-full border border-pink-500/30 shadow-[0_0_80px_rgba(244,63,94,0.35)] animate-pulse" />
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-[90%] h-[90%] rounded-full border border-pink-500/10 shadow-[0_0_100px_rgba(244,63,94,0.15)] animate-pulse" />
               </div>
-
               {/* Main portrait image image container */}
-              <div className="relative w-full h-full rounded-[32px] overflow-hidden bg-gradient-to-tr from-[#12071a] via-[#2a0e36] to-[#0c0312]">
-                {!imgErrors[dikshuPortraitClean] ? (
+              <div className="relative w-full h-full rounded-[36px] overflow-hidden bg-[#0c0312]">
+                {!imgErrors[dikshuBg] ? (
                   <img
-                    src={dikshuPortraitClean}
+                    src={dikshuBg}
                     alt="Dikshu"
-                    onError={() => handleImgError(dikshuPortraitClean)}
+                    onError={() => handleImgError(dikshuBg)}
                     referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover hover:scale-105 transition-all duration-700"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-all duration-1000 ease-out brightness-[0.9] group-hover:brightness-100"
                   />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-pink-100 relative">
-                    <Heart className="h-16 w-16 text-pink-400 fill-pink-500/20 mb-4 animate-pulse" />
-                    <h3 className="font-serif text-2xl font-bold tracking-tight text-white mb-2">Beautiful Dikshu</h3>
-                    <p className="text-xs text-pink-200/70 max-w-[240px]">
-                      A dreamy glow framing your sweet charm. (Custom image placeholder)
+                  <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center text-pink-100 relative bg-gradient-to-br from-[#1a0b2e] to-[#0a0212]">
+                    <Heart className="h-20 w-20 text-pink-500/40 fill-pink-500/10 mb-6 animate-pulse" />
+                    <h3 className="font-cinzel text-2xl font-black tracking-widest text-white mb-3">DIKSHU</h3>
+                    <p className="text-[11px] font-poppins text-pink-200/60 uppercase tracking-[0.2em] max-w-[240px]">
+                      Your beauty frames my cosmos
                     </p>
-                    <div className="absolute bottom-4 left-4 right-4 py-2 border border-pink-500/20 rounded-xl bg-black/40 backdrop-blur-sm">
-                      <span className="font-serif text-[10px] tracking-wider uppercase opacity-85">Princess Glow</span>
-                    </div>
                   </div>
                 )}
 
-                {/* Ambient glow shield */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0e0414] via-transparent to-transparent opacity-80" />
-
-                {/* Little Floating Neon Butterfly Decal Overlay */}
-                <span className="absolute top-12 left-10 text-xl text-pink-400 drop-shadow-[0_0_8px_rgba(255,100,180,0.8)] animate-[bounce_3s_infinite]">🦋</span>
-                <span className="absolute bottom-16 right-10 text-lg text-fuchsia-400 drop-shadow-[0_0_8px_rgba(255,100,180,0.8)] animate-[bounce_4s_infinite_1s]">🦋</span>
-
-                {/* Subtitle details */}
+                {/* Glassy overlay info card */}
                 <div className="absolute bottom-6 left-6 right-6">
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="bg-black/50 backdrop-blur-md rounded-2xl border border-white/10 p-3.5 text-left"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-4 flex justify-between items-center"
                   >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h4 className="font-serif text-sm font-extrabold text-pink-100">Dikshu</h4>
-                        <p className="text-[11px] text-zinc-300 font-medium leading-none">Your presence frames my cosmos</p>
-                      </div>
-                      <Heart className="h-4.5 w-4.5 text-pink-400 fill-pink-400 animate-pulse" />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-pink-500/[0.05] to-transparent" />
+                    <div>
+                      <h4 className="font-cinzel text-xs font-black tracking-[0.2em] text-pink-100">DIKSHU</h4>
+                      <p className="text-[10px] font-poppins text-zinc-400 font-medium tracking-normal uppercase">Presence is everything</p>
+                    </div>
+                    <div className="h-8 w-8 rounded-full bg-pink-500/10 flex items-center justify-center border border-pink-500/20">
+                      <Heart className="h-4 w-4 text-pink-500 fill-pink-500 animate-pulse" />
                     </div>
                   </motion.div>
                 </div>
@@ -384,39 +404,42 @@ export default function App() {
             <motion.div
               whileHover={{ y: -6 }}
               transition={{ duration: 0.3 }}
-              className="lg:col-span-4 rounded-3xl border border-pink-500/10 bg-black/45 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden"
+              className="lg:col-span-4 relative overflow-hidden rounded-[30px] border border-white/[0.18] bg-white/[0.10] backdrop-blur-md shadow-[0_16px_38px_rgba(0,0,0,0.34)] p-8 flex flex-col justify-between group"
             >
-              {/* Romantic background image overlay */}
-              <div
-                className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.55] transition-opacity duration-300"
-                style={{ backgroundImage: `url(${aboutMePhoto})` }}
-              />
-              <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/75 via-[#1b0012]/60 to-black/85" />
+              <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                <img
+                  src={aboutMePhoto}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-full w-full object-cover object-[50%_43%] opacity-[0.64] saturate-[1.08] blur-[0.5px] transition-transform duration-1000 group-hover:scale-110 sm:object-[50%_42%] lg:object-[50%_48%]"
+                />
+              </div>
+              <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/42 via-[#321928]/24 to-black/58" />
+              <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-br from-white/[0.14] via-pink-400/[0.045] to-transparent" />
 
-              {/* Back glowing ambient node */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/5 rounded-full blur-2xl pointer-events-none" />
-
-              <div className="space-y-4">
+              <div className="relative z-10 space-y-5">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-serif text-xl sm:text-2xl font-black text-pink-100 tracking-tight">About Me</h3>
-                  <Heart className="h-4 w-4 text-pink-400 fill-pink-500/20" />
+                  <h3 className="font-cinzel text-xl sm:text-2xl font-black text-white tracking-[0.2em] uppercase">About Me</h3>
+                  <div className="h-10 w-10 rounded-full bg-pink-500/10 flex items-center justify-center border border-pink-500/20">
+                    <Heart className="h-4 w-4 text-pink-500 fill-pink-500/20" />
+                  </div>
                 </div>
                 
-                <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed font-normal">
-                  I'm Omkar. Just a guy who loved you more than himself. My love was always one-sided, but it was real, pure, and endless.
+                <p className="text-pink-50/70 font-poppins text-xs sm:text-sm leading-relaxed font-light">
+                  I'm Omkar. Just a guy who loved you more than himself. My love was simple, but it was honest, pure, and patient.
                 </p>
-                <p className="text-pink-400 font-serif text-sm italic font-extrabold tracking-wide">
+                <p className="text-pink-300 font-playfair text-lg italic font-medium tracking-wide">
                   That's why I'm here... <br />to say I'm truly sorry.
                 </p>
               </div>
 
-              <div className="pt-6">
+              <div className="relative z-10 pt-8">
                 <button
                   onClick={() => setActiveModal('aboutModal')}
-                  className="w-full py-2.5 px-4 rounded-full border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/20 text-pink-300 text-xs sm:text-sm font-semibold transition-all hover:border-pink-400/40 cursor-pointer flex items-center justify-center gap-1.5 duration-200"
+                  className="w-full py-3 px-5 rounded-full border border-white/15 bg-white/[0.08] hover:bg-pink-500/10 text-pink-100 text-xs font-bold uppercase tracking-widest transition-all hover:border-pink-400/35 cursor-pointer flex items-center justify-center gap-2 duration-300 group/btn shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
                 >
-                  <span>Know More About Me</span>
-                  <span>🙇</span>
+                  <span>Know My Soul</span>
+                  <ChevronRight className="h-3 w-3 text-pink-500 transition-transform group-hover/btn:translate-x-1" />
                 </button>
               </div>
             </motion.div>
@@ -425,48 +448,65 @@ export default function App() {
             <motion.div
               whileHover={{ y: -6 }}
               transition={{ duration: 0.3 }}
-              className="lg:col-span-5 rounded-3xl border border-pink-500/10 bg-black/45 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden"
+              className="lg:col-span-5 relative overflow-hidden rounded-[30px] border border-white/[0.18] bg-white/[0.10] backdrop-blur-md shadow-[0_16px_38px_rgba(0,0,0,0.34)] p-8 min-h-[360px] sm:min-h-[380px] lg:min-h-[360px] flex flex-col justify-between group"
               id="memories"
             >
-              {/* Romantic background image overlay */}
-              <div
-                className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.35] transition-opacity duration-300"
-                style={{ backgroundImage: "url('/images/promise-bg.jpg')" }}
-              />
-              <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/75 via-[#1b0012]/60 to-black/85" />
+              {/* Background image overlay */}
+              <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                <img
+                  src={iLoveYouDikshu}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-full w-full object-cover object-[50%_28%] opacity-[0.68] saturate-[1.1] blur-[0.5px] transition-transform duration-1000 group-hover:scale-110 sm:object-[50%_28%] lg:object-[50%_31%]"
+                />
+              </div>
+              <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/34 via-[#522033]/24 to-black/58" />
 
-              <div className="absolute top-0 right-0 w-32 h-32 bg-fuchsia-500/5 rounded-full blur-2xl pointer-events-none" />
+              {/* Premium Inner Glow */}
+              <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-br from-white/[0.16] via-purple-400/[0.045] to-transparent" />
 
-              <div className="space-y-4">
+              <div className="relative z-10 space-y-5">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-serif text-xl sm:text-2xl font-black text-pink-100 tracking-tight">Our Memories</h3>
-                  <span className="text-pink-400 font-serif font-semibold text-xs uppercase tracking-widest">Est. 5th Std</span>
+                  <h3 className="font-cinzel text-xl sm:text-2xl font-black text-white tracking-[0.2em] uppercase">Our Memories</h3>
+                  <span className="text-pink-400 font-poppins font-bold text-[10px] uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/20">EST. 5TH STD</span>
                 </div>
                 
                 {/* Visual miniature timeline preview cards */}
-                <div className="grid grid-cols-2 gap-3 pt-1">
+                <div className="grid grid-cols-2 gap-4 pt-2">
                   {[
-                    { id: 1, text: 'Childhood Days', desc: 'Used to play...' },
-                    { id: 2, text: 'School Memories', desc: 'Innocent days' },
-                    { id: 3, text: 'The Change', desc: 'When you knew' },
-                    { id: 4, text: 'The Distance', desc: 'Reality now' },
+                    { id: 1, text: 'Childhood Days', desc: 'Innocent laughter', src: '/image/memory-11.jpg', pos: '50% 52%' },
+                    { id: 2, text: 'School Years', desc: 'Shared dreams', src: '/image/memory-12.jpg', pos: '48% 34%' },
+                    { id: 3, text: 'The Shift', desc: 'Silent change', src: '/image/memory-9.jpg', pos: '50% 43%' },
+                    { id: 4, text: 'This Moment', desc: 'Honest words', src: '/image/memory-10.jpg', pos: '50% 32%' },
                   ].map((p) => (
-                    <div key={p.id} className="p-2.5 rounded-2xl bg-black/35 border border-pink-500/5 relative overflow-hidden flex flex-col text-left">
-                      <span className="absolute -top-1 -right-1 text-4xl text-pink-400/10 font-serif font-black">{p.id}</span>
-                      <span className="text-[12px] font-bold text-pink-200 truncate pr-4">{p.text}</span>
-                      <span className="text-[10px] text-zinc-400 truncate mt-0.5">{p.desc}</span>
+                    <div key={p.id} className="min-h-[78px] p-4 rounded-2xl bg-white/[0.10] backdrop-blur-sm border border-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] relative overflow-hidden flex flex-col justify-end text-left group/mini">
+                      <img
+                        src={p.src}
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 h-full w-full object-cover opacity-[0.58] saturate-[1.08] transition-transform duration-700 group-hover/mini:scale-110"
+                        style={{ objectPosition: p.pos }}
+                      />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/22 via-[#45172d]/30 to-black/62" />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.10] to-transparent" />
+                      <span className="absolute -top-1 -right-1 text-5xl text-white/[0.08] font-cinzel font-black">{p.id}</span>
+                      <span className="relative text-[11px] font-black text-white uppercase tracking-wider drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">{p.text}</span>
+                      <span className="relative text-[10px] text-pink-50/70 font-poppins mt-1">{p.desc}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="pt-6">
+              <div className="relative z-10 pt-8">
                 <button
-                  onClick={() => setActiveModal('galleryModal')}
-                  className="w-full py-2.5 px-4 rounded-full border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/20 text-pink-300 text-xs sm:text-sm font-semibold transition-all hover:border-pink-400/40 cursor-pointer flex items-center justify-center gap-1.5 duration-200"
+                  onClick={() => {
+                    setGalleryInitialTab('google-photos');
+                    setActiveModal('galleryModal');
+                  }}
+                  className="w-full py-3 px-5 rounded-full border border-white/15 bg-white/[0.08] hover:bg-pink-500/10 text-pink-100 text-xs font-bold uppercase tracking-widest transition-all hover:border-pink-400/35 cursor-pointer flex items-center justify-center gap-2 duration-300 group/btn shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
                 >
-                  <span>View All Memories</span>
-                  <span>📖</span>
+                  <span>Travel Back In Time</span>
+                  <BookOpen className="h-3.5 w-3.5 text-pink-300 transition-transform duration-300 group-hover/btn:scale-110" />
                 </button>
               </div>
             </motion.div>
@@ -475,26 +515,35 @@ export default function App() {
             <motion.div
               whileHover={{ y: -6 }}
               transition={{ duration: 0.3 }}
-              className="lg:col-span-3 rounded-3xl border border-pink-500/10 bg-black/45 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden"
+              className="lg:col-span-3 relative overflow-hidden rounded-[30px] border border-white/15 bg-white/[0.075] backdrop-blur-[10px] shadow-[0_18px_46px_rgba(0,0,0,0.42)] p-8 min-h-[360px] sm:min-h-[380px] lg:min-h-0 flex flex-col justify-between group"
               id="reasons"
             >
-              {/* Romantic background image overlay */}
-              <div
-                className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.40] transition-opacity duration-300"
-                style={{ backgroundImage: "url('/images/ChatGPT%20Image%20May%2025,%202026,%2004_39_57%20PM.png')" }}
-              />
-              <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/75 via-[#1b0012]/65 to-black/85" />
+              {/* Premium Inner Glow */}
+              <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-br from-white/[0.12] via-fuchsia-400/[0.05] to-transparent" />
+              
+              {/* Background image overlay */}
+              <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                <img
+                  src={lookingRight}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-full w-full object-cover object-[50%_31%] opacity-[0.58] saturate-[1.08] blur-[0.5px] transition-transform duration-1000 group-hover:scale-110 sm:object-[50%_32%] lg:object-[50%_50%]"
+                />
+              </div>
+              <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/56 via-black/34 to-black/76" />
 
-              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute -left-10 bottom-0 z-[3] w-32 h-32 bg-purple-500/[0.04] rounded-full blur-[40px] pointer-events-none" />
 
-              <div className="space-y-4">
+              <div className="relative z-10 space-y-5">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-serif text-xl sm:text-2xl font-black text-pink-100 tracking-tight">Why You Matter</h3>
-                  <Heart className="h-4_5 w-4_5 text-pink-500 fill-pink-500" />
+                  <h3 className="font-cinzel text-xl sm:text-2xl font-black text-white tracking-[0.2em] uppercase">Why You Matter</h3>
+                  <div className="h-8 w-8 rounded-full bg-pink-500/20 flex items-center justify-center border border-pink-500/30 shadow-[0_0_12px_rgba(236,72,153,0.3)]">
+                    <Heart className="h-4 w-4 text-pink-500 fill-pink-500" />
+                  </div>
                 </div>
                 
                 {/* List item bullets with tiny pink heart indicators */}
-                <div className="space-y-2 text-left">
+                <div className="space-y-3.5 text-left pt-2">
                   {[
                     'You are highly special to me',
                     'You changed my path & life',
@@ -502,9 +551,9 @@ export default function App() {
                     'You hold the kindest heart',
                     'You deserve cosmic happiness',
                   ].map((text, idx) => (
-                    <div key={idx} className="flex items-start gap-2">
-                      <Heart className="h-3 w-3 text-pink-500 fill-pink-500 mt-1 flex-shrink-0 animate-pulse" />
-                      <span className="text-[11.5px] font-medium text-pink-200/90 leading-tight">
+                    <div key={idx} className="flex items-start gap-3 group/item">
+                      <Heart className="h-3 w-3 text-pink-500 fill-pink-500 mt-1 flex-shrink-0 animate-pulse transition-transform group-hover/item:scale-125" />
+                      <span className="text-[11px] font-bold text-pink-100/80 uppercase tracking-widest leading-tight font-poppins">
                         {text}
                       </span>
                     </div>
@@ -512,12 +561,12 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="pt-6">
+              <div className="relative z-10 pt-8">
                 <button
                   onClick={() => setActiveModal('matterModal')}
-                  className="w-full py-2.5 px-4 rounded-full border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/20 text-pink-300 text-xs sm:text-sm font-semibold transition-all hover:border-pink-400/30 cursor-pointer flex items-center justify-center gap-1 hover:border-pink-400 duration-200"
+                  className="w-full py-3 px-5 rounded-full border border-white/10 bg-white/5 hover:bg-pink-500/10 text-pink-200 text-xs font-bold uppercase tracking-widest transition-all hover:border-pink-500/30 cursor-pointer flex items-center justify-center gap-1 duration-300"
                 >
-                  <span>Read More</span>
+                  <span>Explore Deeply</span>
                 </button>
               </div>
             </motion.div>
@@ -533,23 +582,27 @@ export default function App() {
             <motion.div
               whileHover={{ y: -6 }}
               transition={{ duration: 0.3 }}
-              className="lg:col-span-4 rounded-3xl border border-pink-500/10 bg-black/45 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden"
+              className="lg:col-span-4 relative overflow-hidden rounded-[30px] border border-white/15 bg-white/[0.075] backdrop-blur-[10px] shadow-[0_18px_46px_rgba(0,0,0,0.42)] p-8 flex flex-col justify-between group"
               id="promise"
             >
-              {/* Romantic background image overlay */}
-              <div
-                className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.35] transition-opacity duration-300"
-                style={{ backgroundImage: "url('/images/promise-bg.jpg')" }}
-              />
-              <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/75 via-[#1b0012]/60 to-black/85" />
-              <div className="space-y-4">
+              <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                <img
+                  src={listeningMusic}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-full w-full object-cover object-[50%_40%] opacity-[0.58] saturate-[1.06] blur-[0.5px] transition-transform duration-1000 group-hover:scale-110 sm:object-[50%_38%] lg:object-[50%_42%]"
+                />
+              </div>
+              <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/58 via-[#301526]/38 to-black/78" />
+              <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-br from-white/[0.12] via-pink-400/[0.045] to-transparent" />
+              <div className="relative z-10 space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-serif text-xl sm:text-2xl font-black text-pink-100 tracking-tight">My Promises To You</h3>
-                  <span className="text-xs uppercase font-mono tracking-wider text-pink-300">Faithful Promises</span>
+                  <h3 className="font-cinzel text-xl sm:text-2xl font-black text-white tracking-[0.2em] uppercase">I Promise You</h3>
+                  <span className="text-[10px] font-black uppercase font-poppins tracking-[0.2em] text-pink-400/70">Honest Words</span>
                 </div>
 
                 {/* Elegant listing boxes with heart indicators on the left side */}
-                <div className="space-y-2 pt-1">
+                <div className="space-y-3 pt-1">
                   {[
                     'I will always respect your decisions.',
                     'I will never disturb your peace again.',
@@ -557,11 +610,12 @@ export default function App() {
                     'I will become a better person.',
                     'I will always cherish our memories.',
                   ].map((text, idx) => (
-                    <div key={idx} className="flex items-center gap-2.5 p-2 rounded-xl bg-black/25 border border-white/5 text-left">
-                      <div className="h-5 w-5 rounded-full bg-pink-500/15 flex items-center justify-center text-[10px] text-pink-300 font-bold border border-pink-500/25">
+                    <div key={idx} className="flex items-center gap-4 p-3.5 rounded-2xl bg-white/[0.075] backdrop-blur-md border border-white/10 text-left group/vow relative overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-pink-500/[0.03] to-transparent opacity-0 group-hover/vow:opacity-100 transition-opacity" />
+                      <div className="h-7 w-7 shrink-0 rounded-full bg-pink-500/10 flex items-center justify-center text-[10px] text-pink-400 font-black border border-pink-500/20 shadow-[0_0_8px_rgba(236,72,153,0.2)]">
                         {idx + 1}
                       </div>
-                      <span className="text-[11.5px] font-medium text-pink-100/95 leading-snug">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-pink-100/90 leading-snug font-poppins">
                         {text}
                       </span>
                     </div>
@@ -569,13 +623,13 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="pt-6">
+              <div className="relative z-10 pt-8">
                 <button
                   onClick={() => setActiveModal('promiseModal')}
-                  className="w-full py-2.5 px-4 rounded-full border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/20 text-pink-300 text-xs sm:text-sm font-semibold transition-all hover:border-pink-400/40 cursor-pointer flex items-center justify-center gap-1 duration-200"
+                  className="w-full py-3.5 px-6 rounded-full border border-white/10 bg-white/[0.07] hover:bg-pink-500/10 text-pink-200 text-xs font-black uppercase tracking-[0.2em] transition-all hover:border-pink-400/35 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_12px_24px_rgba(0,0,0,0.2)] cursor-pointer flex items-center justify-center gap-2 duration-300 group/btn"
                 >
-                  <span>My Promise To You</span>
-                  <span>💍</span>
+                  <span>Read My Promise</span>
+                  <Heart className="h-4 w-4 text-pink-300 fill-pink-500/30 transition-transform duration-300 group-hover/btn:scale-110" />
                 </button>
               </div>
             </motion.div>
@@ -584,50 +638,70 @@ export default function App() {
             <motion.div
               whileHover={{ y: -6 }}
               transition={{ duration: 0.3 }}
-              className="lg:col-span-5 rounded-3xl border border-pink-500/20 bg-black/45 backdrop-blur-xl p-6 flex flex-col justify-between shadow-2xl relative overflow-hidden text-center"
+              className="lg:col-span-5 relative overflow-hidden rounded-[30px] border border-white/15 bg-white/[0.075] backdrop-blur-[10px] shadow-[0_18px_46px_rgba(0,0,0,0.42)] p-8 flex flex-col justify-between text-center group"
               id="letter"
             >
-              {/* Romantic background image overlay */}
-              <div
-                className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.55] transition-opacity duration-300"
-                style={{ backgroundImage: `url(${messageHeartBg})` }}
-              />
-              <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/65 via-[#1b0012]/55 to-black/80" />
+              <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                <img
+                  src={messageHeartBg}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-full w-full object-cover object-[50%_39%] opacity-[0.55] saturate-[1.08] blur-[0.5px] transition-transform duration-2000 group-hover:scale-105 sm:object-[50%_36%] lg:object-[50%_42%]"
+                />
+              </div>
+              <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/56 via-[#3c142c]/34 to-black/78" />
+              <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-br from-white/[0.12] via-pink-400/[0.05] to-transparent" />
 
-              {/* Giant glowing background heart */}
-              <div className="absolute inset-x-0 -top-6 flex justify-center opacity-[0.05] animate-pulse">
-                <Heart className="w-80 h-80 text-pink-500 fill-pink-500" />
+              <div className="pointer-events-none absolute inset-x-0 top-7 z-[3] flex justify-center">
+                <motion.div
+                  animate={{ y: [0, -8, 0], opacity: [0.26, 0.42, 0.26] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+                  className="relative flex h-24 w-24 items-center justify-center"
+                >
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+                    className="absolute inset-0 rounded-full border border-dashed border-pink-200/25"
+                  />
+                  <div className="absolute inset-4 rounded-full border border-white/10 bg-white/[0.035] backdrop-blur-sm" />
+                  <Sparkles className="relative h-7 w-7 text-pink-200/70" />
+                </motion.div>
               </div>
 
-              <div className="space-y-4 relative z-10 my-auto py-4">
-                <span className="text-[34px] font-serif text-pink-400 leading-none block">“</span>
+              <div className="space-y-6 relative z-10 my-auto py-6">
+                <span className="text-[48px] font-playfair text-pink-400 leading-none block drop-shadow-[0_0_12px_rgba(236,72,153,0.4)]">&ldquo;</span>
                 
-                <h4 className="font-serif text-lg sm:text-2xl font-bold tracking-tight text-pink-100 italic px-2">
-                  A Message From My Heart
+                <h4 className="font-cinzel text-xl sm:text-2xl font-black tracking-[0.2em] text-white uppercase drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+                  From My Heart
                 </h4>
                 
-                <p className="text-pink-200/90 font-serif font-semibold text-xs sm:text-sm leading-relaxed max-w-sm mx-auto italic">
-                  You told me to leave. <br />
-                  You told me to die. <br />
-                  You told me you never loved me. <br />
-                  And still... I stayed. <br />
+                <p className="text-pink-100 font-playfair text-lg sm:text-xl leading-relaxed max-w-sm mx-auto italic font-medium">
                   Not because I needed you. <br />
-                  But because my heart always chose you.
+                  But because my heart <br />
+                  always chose you.
                 </p>
 
-                {/* Glowing holographic ambient heart symbol */}
-                <div className="w-16 h-16 rounded-full border border-pink-400/20 flex items-center justify-center mx-auto my-3 bg-pink-500/5 shadow-[0_0_20px_rgba(236,72,153,0.15)]">
-                  <Heart className="h-6 w-6 text-pink-400 fill-pink-500/30 animate-pulse" />
-                </div>
+                <motion.div
+                  animate={{ y: [0, -5, 0], scale: [1, 1.04, 1] }}
+                  transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
+                  className="relative mx-auto my-6 flex h-20 w-20 items-center justify-center rounded-full border border-pink-300/25 bg-white/[0.055] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_0_24px_rgba(236,72,153,0.18)] backdrop-blur-md"
+                >
+                  <motion.div
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 14, repeat: Infinity, ease: 'linear' }}
+                    className="absolute -inset-2 rounded-full border border-dashed border-pink-300/20"
+                  />
+                  <MessageCircle className="h-8 w-8 text-pink-300" />
+                </motion.div>
               </div>
 
-              <div className="pt-6 relative z-10 w-full">
+              <div className="relative z-10 w-full pt-4">
                 <button
                   onClick={() => setActiveModal('messageModal')}
-                  className="w-full py-2.5 px-4 rounded-full border border-pink-400/40 bg-gradient-to-r from-pink-500/25 to-purple-600/25 hover:from-pink-500/40 hover:to-purple-600/40 text-pink-200 text-xs sm:text-sm font-semibold transition-all hover:border-pink-300 shadow-md shadow-pink-500/10 cursor-pointer flex items-center justify-center gap-1.5 duration-200 animate-pulse"
+                  className="w-full py-4 px-8 rounded-full border border-white/15 bg-white/[0.075] hover:bg-pink-500/10 text-white font-black uppercase tracking-[0.2em] text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_14px_28px_rgba(0,0,0,0.22)] hover:border-pink-400/35 cursor-pointer flex items-center justify-center gap-3 transition-all duration-300 group/btn active:scale-95"
                 >
-                  <span>Read My Full Letter</span>
-                  <span>✉️</span>
+                  <span className="group-hover:translate-x-1 transition-transform">Read My Soul's Letter</span>
+                  <MessageCircle className="h-4 w-4 text-pink-200 transition-transform duration-300 group-hover/btn:scale-110" />
                 </button>
               </div>
             </motion.div>
@@ -636,60 +710,59 @@ export default function App() {
             <motion.div
               whileHover={{ y: -6 }}
               transition={{ duration: 0.3 }}
-              className="lg:col-span-3 rounded-3xl border border-pink-500/10 bg-black/45 backdrop-blur-xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden"
+              className="lg:col-span-3 relative overflow-hidden rounded-[30px] border border-white/15 bg-white/[0.075] backdrop-blur-[10px] shadow-[0_18px_46px_rgba(0,0,0,0.42)] p-8 flex flex-col justify-between group"
               id="gallery"
             >
-              {/* Romantic background image overlay */}
-              <div
-                className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.35] transition-opacity duration-300"
-                style={{ backgroundImage: "url('/images/modal-bg.jpg')" }}
-              />
-              <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/75 via-[#1b0012]/60 to-black/85" />
-              <div className="space-y-4">
+              <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                <img
+                  src={lookingLeft}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-full w-full object-cover object-[50%_38%] opacity-[0.52] saturate-[1.06] blur-[0.5px] transition-transform duration-1000 group-hover:scale-110 sm:object-[50%_35%] lg:object-[50%_45%]"
+                />
+              </div>
+              <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/60 via-[#321426]/38 to-black/80" />
+              <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-br from-white/[0.10] via-pink-400/[0.04] to-transparent" />
+              
+              <div className="relative z-10 space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-serif text-xl sm:text-2xl font-black text-pink-100 tracking-tight">Our Moments</h3>
-                  <span className="text-[10px] uppercase font-mono tracking-wider text-pink-300">Frames</span>
+                  <h3 className="font-cinzel text-xl sm:text-2xl font-black text-white tracking-[0.2em] uppercase">Moments</h3>
+                  <span className="text-[10px] font-black uppercase font-poppins tracking-[0.2em] text-pink-400/50">FRAMES</span>
                 </div>
 
-                {/* Grid of 6 small thumbnails placeholders */}
-                <div className="grid grid-cols-3 gap-2.5 pt-1.5">
-                  {[
-                    "/images/memory-1.jpg",
-                    "/images/memory-2.jpg",
-                    "/images/memory-3.jpg",
-                    "/images/memory-4.jpg",
-                    "/images/memory-5.jpg",
-                    "/images/memory-6.jpg"
-                  ].map((img, idx) => (
+                {/* Grid of 6 small memory thumbnails */}
+                <div className="grid grid-cols-3 gap-3 pt-1">
+                  {momentFrameImages.map((item, i) => (
                     <div
-                      key={img}
-                      className="aspect-square rounded-xl bg-pink-900/10 overflow-hidden border border-white/5 relative hover:border-pink-500/40 hover:scale-105 transition-all duration-300"
+                      key={item.src}
+                      className="aspect-square rounded-2xl bg-black/40 overflow-hidden border border-white/10 relative hover:border-pink-500/40 hover:scale-110 transition-all duration-500 group/thumb"
                     >
-                      {!imgErrors[img] ? (
-                        <img
-                          src={img}
-                          alt="Memory thumbnail"
-                          onError={() => handleImgError(img)}
-                          referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover grayscale-25"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-tr from-purple-950/60 to-pink-900/40 flex items-center justify-center p-1 text-center">
-                          <Heart className="h-3.5 w-3.5 text-pink-400 fill-pink-500/25 animate-pulse" />
-                        </div>
-                      )}
+                      <img
+                        src={item.src}
+                        alt={`Memory frame ${i + 1}`}
+                        style={{ objectPosition: item.pos }}
+                        className="h-full w-full object-cover grayscale-[18%] transition-all duration-700 group-hover/thumb:scale-110 group-hover/thumb:grayscale-0"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-tr from-pink-950/45 via-black/10 to-white/5 transition-opacity duration-500 group-hover/thumb:opacity-40" />
+                      <div className="absolute inset-0 bg-pink-500/10 opacity-0 group-hover/thumb:opacity-100 transition-opacity" />
+                      <div className="absolute left-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-white/15 bg-black/45 backdrop-blur-sm">
+                        <Heart className="h-2.5 w-2.5 text-pink-200 fill-pink-400/50" />
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="pt-6">
+              <div className="relative z-10 pt-8">
                 <button
-                  onClick={() => setActiveModal('galleryModal')}
-                  className="w-full py-2.5 px-4 rounded-full border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/20 text-pink-300 text-xs sm:text-sm font-semibold transition-all hover:border-pink-400/40 cursor-pointer flex items-center justify-center gap-1 duration-200"
+                  onClick={() => {
+                    setGalleryInitialTab('photos');
+                    setActiveModal('galleryModal');
+                  }}
+                  className="w-full py-3.5 px-6 rounded-full border border-white/10 bg-white/5 hover:bg-pink-500/10 text-pink-200 text-xs font-black uppercase tracking-widest transition-all hover:border-pink-500/30 cursor-pointer flex items-center justify-center gap-2 duration-300"
                 >
-                  <span>View Full Gallery</span>
-                  <span>🖼️</span>
+                  <span>Open Gallery</span>
+                  <span className="text-sm">🖼️</span>
                 </button>
               </div>
             </motion.div>
@@ -698,65 +771,62 @@ export default function App() {
         </section>
 
         {/* SECTION: DECISION FORGIVENESS & MAGICAL BELL JAR */}
-        <section id="forgive" className="scroll-mt-24 pt-6">
-          <div className="rounded-3xl border border-pink-500/20 bg-[#100315]/85 backdrop-blur-xl p-6 sm:p-8 md:p-12 shadow-2xl relative overflow-hidden">
+        <section id="forgive" className="scroll-mt-24 pt-12">
+          <div className="relative overflow-hidden rounded-[40px] border border-white/[0.09] bg-black/[0.22] backdrop-blur-md shadow-[0_16px_46px_rgba(0,0,0,0.42)] p-8 sm:p-12 md:p-20 group">
             
-            {/* Romantic background image overlay */}
-            <div
-              className="absolute inset-0 -z-10 bg-cover bg-center opacity-[0.55] transition-opacity duration-300"
-              style={{ backgroundImage: "url('/images/modal-bg.jpg')" }}
-            />
-            <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/60 via-[#1b0012]/55 to-black/80" />
+            {/* Premium Inner Glow */}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.055] via-pink-400/[0.018] to-transparent" />
+            
+            {/* Pulsing visual neon ring overlay */}
+            <div className="absolute inset-8 rounded-[40px] border border-dashed border-white/[0.035] animate-[spin_180s_linear_infinite] pointer-events-none" />
 
-            {/* Glowing background meshes inside forgiveness section */}
-            <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-pink-500/5 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -top-12 -right-12 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center relative z-10">
               
               {/* Question Text Desk Left */}
-              <div className="lg:col-span-7 space-y-6 text-left">
-                <div className="flex items-center gap-2">
-                  <Heart className="h-5 w-5 text-pink-500 fill-pink-500 animate-bounce" />
-                  <span className="font-serif text-sm tracking-wider uppercase text-pink-300 font-bold">Forgive Me?</span>
+              <div className="lg:col-span-12 space-y-8 text-center max-w-3xl mx-auto">
+                <div className="flex items-center justify-center gap-3">
+                  <div className="h-1px w-12 bg-gradient-to-r from-transparent to-pink-500" />
+                  <span className="font-cinzel text-xs tracking-[0.4em] uppercase text-pink-400 font-black">Sacred Choice</span>
+                  <div className="h-1px w-12 bg-gradient-to-l from-transparent to-pink-500" />
                 </div>
 
-                <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-black text-pink-100 tracking-tight leading-none">
-                  For Forgiving Me...
+                <h2 className="font-cinzel text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-widest leading-[1.1] uppercase">
+                  Can You Find It In Your Heart?
                 </h2>
 
-                <p className="text-zinc-300 font-sans text-sm sm:text-base leading-relaxed font-normal">
-                  I don't expect you to forgive me easily. I just hope one day, you'll understand that my love was never fake. It was just... one-sided. If you can find it in your heart to forgive me someday, I will be the luckiest person alive.
+                <p className="text-zinc-400 font-poppins text-base sm:text-lg leading-relaxed font-light">
+                  I don't expect it to be easy. I just hope one day, you'll understand that my soul only knew how to love you. If you can find even a small spark of forgiveness, I will cherish it for eternity.
                 </p>
 
-                <p className="text-pink-300 font-serif font-extrabold italic text-sm tracking-wide">
-                  "If you can forgive me, I'll be the luckiest person alive."
+                <p className="text-pink-300 font-playfair text-xl italic font-medium tracking-wide">
+                  "If you forgive me, my world finds peace."
                 </p>
 
                 {/* INTERACTIVE CHOICE BUTTONS CONTROLLER */}
-                <div className="flex flex-wrap items-center gap-4 pt-2">
+                <div className="flex flex-wrap items-center justify-center gap-6 pt-6">
                   <button
                     onClick={() => handleForgiveChoice('yes')}
-                    className={`px-6 py-3 font-bold rounded-full text-sm sm:text-base tracking-wide flex items-center gap-1.5 shadow-lg cursor-pointer transition-all duration-300 active:scale-95 ${
+                    className={`px-10 py-5 font-black uppercase tracking-[0.2em] rounded-full text-sm shadow-2xl cursor-pointer transition-all duration-500 active:scale-95 flex items-center gap-3 relative overflow-hidden group/btn ${
                       forgiveResponse === 'yes'
-                        ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-emerald-500/20'
-                        : 'bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-600 hover:to-fuchsia-700 text-white shadow-pink-500/20 hover:shadow-pink-500/40'
+                        ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-emerald-500/40'
+                        : 'bg-gradient-to-r from-pink-500 via-fuchsia-600 to-purple-600 text-white shadow-pink-500/30 hover:shadow-pink-500/60'
                     }`}
                   >
-                    <span>Yes, I Forgive You</span>
-                    <span>{forgiveResponse === 'yes' ? '✨💖' : '💖'}</span>
+                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
+                    <span className="relative z-10">Yes, I Forgive You</span>
+                    <span className="relative z-10 text-xl">{forgiveResponse === 'yes' ? '✨💖' : '💖'}</span>
                   </button>
 
                   <button
                     onClick={() => handleForgiveChoice('thinking')}
-                    className={`px-6 py-3 font-semibold rounded-full text-sm sm:text-base tracking-wide cursor-pointer transition-all duration-300 ${
+                    className={`px-10 py-5 font-black uppercase tracking-[0.2em] rounded-full text-xs cursor-pointer transition-all duration-500 backdrop-blur-md relative overflow-hidden group/btn-alt ${
                       forgiveResponse === 'thinking'
-                        ? 'border border-amber-500/50 bg-amber-500/10 text-amber-300'
-                        : 'border border-pink-500/20 hover:border-pink-500/40 bg-white/5 hover:bg-pink-500/10 text-pink-300'
+                        ? 'border border-amber-500/50 bg-amber-500/20 text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.2)]'
+                        : 'border border-white/10 hover:border-pink-500/30 bg-white/5 text-pink-200'
                     }`}
                   >
-                    <span>Still Thinking...</span>
-                    {forgiveResponse === 'thinking' && <span className="ml-1">⌛</span>}
+                    <span className="relative z-10">Still Thinking...</span>
+                    {forgiveResponse === 'thinking' && <span className="ml-2 relative z-10 animate-pulse">⌛</span>}
                   </button>
                 </div>
 
@@ -764,60 +834,58 @@ export default function App() {
                 <AnimatePresence mode="wait">
                   {forgiveResponse && (
                     <motion.div
-                      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                      initial={{ opacity: 0, y: 30, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                      transition={{ type: 'spring', stiffness: 100, damping: 15 }}
-                      className={`p-6 rounded-2xl border mt-5 text-left relative overflow-hidden transition-all duration-500 ${
+                      exit={{ opacity: 0, y: -30, scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+                      className={`p-10 rounded-[30px] border mt-10 text-center relative overflow-hidden transition-all duration-700 ${
                         forgiveResponse === 'yes'
-                          ? 'border-emerald-500/40 bg-gradient-to-br from-[#0c2415]/95 via-[#06150c]/98 to-[#020704]/99 shadow-[0_0_40px_rgba(16,185,129,0.18)]'
-                          : 'border-pink-500/10 bg-[#160a22]/80 backdrop-blur-md shadow-lg shadow-black/30'
+                          ? 'border-emerald-500/30 bg-gradient-to-br from-[#06150c]/98 via-[#0c2415]/95 to-[#020704]/99 shadow-[0_0_60px_rgba(16,185,129,0.25)]'
+                          : 'border-white/10 bg-black/60 backdrop-blur-2xl shadow-2xl'
                       }`}
                     >
-                      {/* Left glow side beam */}
-                      <div className={`absolute inset-y-0 left-0 w-1.5 rounded-l-2xl ${
-                        forgiveResponse === 'yes' ? 'bg-gradient-to-b from-emerald-400 to-teal-500 animate-pulse' : 'bg-pink-500'
-                      }`} />
+                      {/* Premium Inner Glow */}
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.05] via-emerald-400/[0.02] to-transparent" />
 
                       {/* Sparkly decorative floating stars in YES card background */}
                       {forgiveResponse === 'yes' && (
-                        <>
-                          <div className="absolute top-2 right-4 text-emerald-400/20 text-lg animate-pulse">✨</div>
-                          <div className="absolute bottom-3 right-10 text-teal-400/10 text-xl animate-bounce delay-300">🌸</div>
-                          <div className="absolute top-8 right-16 text-emerald-300/10 text-sm animate-ping">💖</div>
-                        </>
+                        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                          <div className="absolute top-4 left-10 text-emerald-400/20 text-2xl animate-pulse">✨</div>
+                          <div className="absolute bottom-6 right-12 text-teal-400/15 text-3xl animate-bounce delay-700">🌸</div>
+                          <div className="absolute top-12 right-20 text-emerald-300/10 text-lg animate-ping">💖</div>
+                        </div>
                       )}
 
-                      {forgiveResponse === 'yes' ? (
-                        <div className="space-y-2 relative z-10">
-                          <div className="flex items-center gap-2">
-                            <span className="flex items-center justify-center h-7 w-7 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-bold">🥺</span>
-                            <h4 className="font-serif text-lg font-bold text-emerald-300 tracking-tight">
-                              Thank you, Dikshu... You have made me the happiest person
-                            </h4>
+                        {forgiveResponse === 'yes' ? (
+                          <div className="space-y-4 relative z-10">
+                            <div className="flex flex-col items-center gap-4">
+                              <div className="h-16 w-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-3xl shadow-[0_0_20px_rgba(16,185,129,0.3)]">🥺</div>
+                              <h4 className="font-cinzel text-2xl font-black text-emerald-300 tracking-[0.2em] uppercase">
+                                My World Finds Its Peace
+                              </h4>
+                            </div>
+                            <p className="font-poppins text-base md:text-lg text-zinc-300 leading-relaxed font-light max-w-2xl mx-auto">
+                              Thank you, Dikshu. Your forgiveness is the most precious gift light has ever touched. I will honor your boundaries and protect your peace with my soul. You are, and always will be, respected above all else.
+                            </p>
+                            <div className="pt-1.5 flex items-center gap-1 text-xs text-emerald-400 font-mono">
+                              <span>✨ Trust restored & protected forever</span>
+                            </div>
                           </div>
-                          <p className="text-sm md:text-base text-zinc-300 leading-relaxed font-normal">
-                            Your forgiveness is the most precious gift I could ever receive in my life. I will honor, cherish, and protect your trust, your space, and your boundaries with every single breath I take. I promise to be a constant source of respect, absolute safety, and genuine peace for you always. Thank you for giving my heart peace.
-                          </p>
-                          <div className="pt-1.5 flex items-center gap-1 text-xs text-emerald-400 font-mono">
-                            <span>✨ Trust restored & protected forever</span>
+                        ) : (
+                          <div className="space-y-1 relative z-10">
+                            <h4 className="font-serif text-base font-bold text-pink-200">Take all the time you need... ⌛</h4>
+                            <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
+                              I completely understand. Your comfort, space, and peace are the absolute most important things to me. I will never push you. I will wait at a respectful distance, praying for your happiness and laughing always.
+                            </p>
                           </div>
-                        </div>
-                      ) : (
-                        <div className="space-y-1 relative z-10">
-                          <h4 className="font-serif text-base font-bold text-pink-200">Take all the time you need... ⌛</h4>
-                          <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
-                            I completely understand. Your comfort, space, and peace are the absolute most important things to me. I will never push you. I will wait at a respectful distance, praying for your happiness and laughing always.
-                          </p>
-                        </div>
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
               </div>
 
               {/* Magical interactive 3D Glass Jar Dome Right */}
-              <div className="lg:col-span-5 flex justify-center py-6">
+              <div className="lg:col-span-12 flex w-full justify-center py-6">
                 <MagicalBellJar3D />
               </div>
 
@@ -867,6 +935,7 @@ export default function App() {
       {/* APOLOGY OVERLAY MODALS SYSTEM */}
       <ApologyModals 
         activeModal={activeModal} 
+        galleryInitialTab={galleryInitialTab}
         onClose={() => setActiveModal(null)} 
       />
 

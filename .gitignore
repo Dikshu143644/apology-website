@@ -8,5 +8,12 @@ coverage/
 !.env.example
 responses.json
 login-attempts.json
+login-users.json
 site-settings.json
 output.txt
+setting.local.json
+.agents/
+.cursor/
+.jetro/
+.mcp.json
+.windsurfrules
