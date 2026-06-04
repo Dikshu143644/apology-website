@@ -17,3 +17,7 @@ setting.local.json
 .jetro/
 .mcp.json
 .windsurfrules
+.netlify/
+
+# Local Netlify folder
+.netlify
