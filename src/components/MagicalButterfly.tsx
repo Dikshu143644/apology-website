@@ -425,7 +425,7 @@ export default function MagicalButterfly() {
               triggerFlight();
             }
           }}
-          className="absolute left-0 top-[36%] z-[70] h-[44vh] min-h-[220px] max-h-[380px] w-[220px] -translate-y-1/2 cursor-pointer rounded-[32px] border border-pink-300/0 bg-transparent outline-none pointer-events-auto hover:bg-pink-500/[0.025] focus-visible:border-pink-300/50 focus-visible:bg-pink-500/10 focus-visible:ring-2 focus-visible:ring-pink-300/35 sm:top-[38%] sm:w-[260px] md:left-4 lg:left-0"
+          className="absolute left-[6%] top-[31%] z-[70] h-24 w-28 -translate-y-1/2 cursor-pointer rounded-[28px] border border-pink-300/0 bg-transparent outline-none pointer-events-auto hover:bg-pink-500/[0.035] focus-visible:border-pink-300/50 focus-visible:bg-pink-500/10 focus-visible:ring-2 focus-visible:ring-pink-300/35 sm:left-[8%] sm:top-[33%] sm:h-28 sm:w-32 md:left-[9%] lg:left-[6%] xl:left-[8%]"
         >
           <span className="sr-only">Launch butterfly animation</span>
         </button>

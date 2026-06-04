@@ -266,7 +266,7 @@ export default function App() {
       {/* HERO SECTION */}
       <section id="home" className="min-h-screen flex items-center justify-center pt-24 pb-12 px-6 sm:px-12 relative z-10">
         <MagicalButterfly />
-        <div className="relative z-10 w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div className="relative z-30 w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Hero Content Left */}
           <div className="lg:col-span-7 text-left space-y-6">
@@ -287,7 +287,7 @@ export default function App() {
               For every mistake. For every moment I failed to understand you. This space is a dedicated dreamscape for the words I couldn't express.
             </p>
 
-            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 sm:gap-4 pt-4">
+            <div className="relative z-40 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 sm:gap-4 pt-4">
               <motion.button
                 type="button"
                 onClick={() => setActiveModal('messageModal')}
@@ -309,7 +309,7 @@ export default function App() {
               
               <motion.button
                 type="button"
-                onClick={() => handleLinkClick('#about')}
+                onClick={() => handleLinkClick('#memories')}
                 whileHover={{ y: -3, scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 className="group/secondary relative inline-flex min-h-[52px] w-full sm:w-auto items-center justify-center gap-3 overflow-hidden rounded-full border border-white/15 bg-white/[0.055] px-7 py-3.5 text-[11px] font-black uppercase tracking-[0.18em] text-pink-100/90 shadow-[0_12px_28px_rgba(0,0,0,0.24)] backdrop-blur-[10px] transition-colors duration-300 hover:border-pink-300/35 hover:bg-pink-500/[0.08] cursor-pointer"
